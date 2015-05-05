@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+	<title>polled you so</title>
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+	<!--Load the Google AJAX API-->
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+	<!-- jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
+
+	<!-- icons -->
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+	<!-- CreateJS Suite -->
+	<script src="js/third-party/easeljs-0.8.0.min.js"></script>
+	<script src="js/third-party/tweenjs-0.6.0.min.js"></script>
+	<script src="js/third-party/soundjs-0.6.0.min.js"></script>
+	<script src="js/third-party/preloadjs-0.6.0.min.js"></script>
+
+	<!-- ChartJS -->
+	<script src="js/third-party/Chart.js"></script>
+
+	<!-- Custom JS -->
+	<script src="js/main.js"></script>
+	<script src="js/data.js"></script>
+	<script src="js/askQuestion.js"></script>
+	<script src="js/modal.js"></script>
+	<script src="js/facebook.js"></script>
+
+	<!--<script src="js/Velocity.js"></script>-->
+</head>
+
+
+<body>
+	<!-- initialize facebook stuff -->
+	<script>
+		
+	</script>
+	<div id="overlay">
+	</div>
+	<div id="loader">
+		<!-- svg loader from http://codepen.io/WhiteWolfWizard/pen/NPdNGv -->
+		<svg width="70" height="20">
+			<rect width="20" height="20" x="0" y="0" rx="3" ry="3" style="fill:#7D26CD">
+				<animate attributeName="width" values="0;20;20;20;0" dur="1000ms" repeatCount="indefinite"/>
+				<animate attributeName="height" values="0;20;20;20;0" dur="1000ms" repeatCount="indefinite"/>
+				<animate attributeName="x" values="10;0;0;0;10" dur="1000ms" repeatCount="indefinite"/>
+				<animate attributeName="y" values="10;0;0;0;10" dur="1000ms" repeatCount="indefinite"/>
+			</rect>
+			<rect width="20" height="20" x="25" y="0" rx="3" ry="3" style="fill:#7D26CD">
+				<animate attributeName="width" values="0;20;20;20;0" begin="200ms" dur="1000ms" repeatCount="indefinite"/>
+				<animate attributeName="height" values="0;20;20;20;0" begin="200ms" dur="1000ms" repeatCount="indefinite"/>
+				<animate attributeName="x" values="35;25;25;25;35" begin="200ms" dur="1000ms" repeatCount="indefinite"/>
+				<animate attributeName="y" values="10;0;0;0;10" begin="200ms" dur="1000ms" repeatCount="indefinite"/>
+			</rect>
+			<rect width="20" height="20" x="50" y="0" rx="3" ry="3" style="fill:#7D26CD">
+				<animate attributeName="width" values="0;20;20;20;0" begin="400ms" dur="1000ms" repeatCount="indefinite"/>
+				<animate attributeName="height" values="0;20;20;20;0" begin="400ms" dur="1000ms" repeatCount="indefinite"/>
+				<animate attributeName="x" values="60;50;50;50;60" begin="400ms" dur="1000ms" repeatCount="indefinite"/>
+				<animate attributeName="y" values="10;0;0;0;10" begin="400ms" dur="1000ms" repeatCount="indefinite"/>
+			</rect>
+		</svg>
+	</div>
+
+	<div id="card">
+		<div id="flag"><i class="fa fa-flag"></i></div>
+		<ul id="someQ"></ul>
+<!--
+		<div id="question"></div>
+		<div id="answer_one" class="answer display">
+		</div>
+		<div id="answer_two" class="answer display">
+		</div>
+		<div id="answer_three" class="answer display">
+		</div>
+		<div id="answer_four" class="answer display">
+		</div>
+		<div id="answer_five" class="answer display">
+		</div>
+	-->
+</div>
+
+<div id="flagModal">
+	<h2>Offended? Spammy question?</h2>
+	<div>Flag question</div>
+</div>
+
+<div id="data">
+	<div id="dataViews">
+		<span id="freqView">Overall</span>
+		<span id="genderView">Gender</span>
+		<span id="ageView">Age</span>
+		<span id="mapView" class="selected">Map</span>
+		<span id="musicView">Music</span>
+	</div>
+	<div id="freqData"></div>
+	<div id="genderData"><canvas id="genderCanvas"></canvas></div>
+	<div id="ageData"></div>
+	<div id="map"></div>
+	<canvas id="music"></canvas>
+</div>
+
+<div id="uploadQuestion" onsubmit="submitQuestion()">
+	<form>
+		<div class="uploadField">ask a question</div>
+		<input type="text" placeholder="your question" id="yourQ" class="uploadField">
+		<div class="uploadField">number of possible answers: <input type="number" id="numberAnsSelect"></div>
+		<table id="numAnsSelect" style="width:100%">
+			<tr>
+				<td>2</td><td>3</td><td>4</td><td>5</td>
+			</tr>
+		</table>
+		<input type="text" placeholder="first answer" id="ans1" class="answer uploadField"><br>
+		<input type="text" placeholder="second answer" id="ans2" class="answer uploadField"><br>
+		<input type="text" placeholder="third answer" id="ans3" class="answer uploadField"><br>
+		<input type="text" placeholder="fourth answer" id="ans4" class="answer uploadField"><br>
+		<input type="text" placeholder="fifth answer" id="ans5" class="answer uploadField"><br>
+		<input type="submit">
+	</form>
+</div>
+
+<div id="login">
+	Polled You So
+	<div id="facebookButton" onclick="facebookLogin()">
+		<i class="fa fa-facebook-official"></i>&nbsp;
+		Sign in with Facebook
+	</div>
+</div>
+
+
+
+<div id="navbar" class="stuckBar">
+	<div id="logo">
+		<div id="big"></div>
+		<div id="med"></div>
+		<div id="small"></div>
+	</div>
+	<!-- log out of polledyouso and facebook -->
+	<!--
+	<div id ="log-out" style="display: none;" >
+		      <fb:login-button autologoutlink="true" onlogin="checkLoginState();"></fb:login-button>
+	    </div>
+-->
+
+
+<div id="locToggle">
+	<div id="near" class="selected">near</div><div id="far">far</div>
+</div>
+<div id="userInfo">
+	<div id="gender">
+		<i class="fa fa-mars"></i>
+		<i class="fa fa-venus" style="display:none"></i>
+	</div>
+	<div id="age">
+		20
+	</div>
+	<div id="location">
+		<span>Princeton</span>
+		<i class="fa fa-map-marker" style="color:red; opacity:0.5"></i>
+	</div>
+
+	<div id="userSelections">
+		<ul>
+			<li>my profile</li>
+			<li id="logout">logout</li>
+		</ul>
+	</div>
+
+</div>
+</div>
+
+<progress max="100" value="100"></progress>
+
+<div id="allow">Please allow location services.</div>
+
+<div id="minimize">
+	<div id="questionMin">HOW ARE YOU USED TO LOVING?</div>
+	<div id="answersMin">
+		<span>tenderly</span>
+		<span>anxiously</span>
+		<span>masturbatorily</span>
+		<span>discreetly</span>
+		<span>wut is luv</span>
+	</div>
+</div>
+
+
+<div id="clickToAsk" class="stuckBar">
+	ask a question
+</div>
+<div id="navRight" class="changeQ">
+	<i class="fa fa-angle-right"></i>
+</div>
+<div id="navLeft" class="changeQ">
+	<i class="fa fa-angle-left"></i>
+</div>
+
+</body>
+
+
+
+
+</html>

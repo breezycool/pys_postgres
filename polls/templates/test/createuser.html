@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>polled you so</title>
+    {% load staticfiles %}
+    {% load app_filters %}
+    <link rel="stylesheet" type="text/css" href="{% static 'current/css/index.css' %}">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+</head>
+
+
+<body>
+    <!-- initialize facebook stuff -->
+    <div id="overlay">
+    </div>
+
+    <div id="card">
+        <br><br><br>
+        <div id="question">user call to be created (look in js)</div>
+    </div>
+
+<div id="navbar" class="stuckBar">
+    <div id="logo">
+        <div id="big"></div>
+        <div id="med"></div>
+        <div id="small"></div>
+    </div>
+    <div id="locToggle">
+        <div id="near">create</div><div id="far">user</div>
+    </div>
+    <div id="userInfo">
+        <div id="gender">
+            <i class="fa fa-mars"></i>
+            <i class="fa fa-venus" style="display:none"></i>
+        </div>
+        <div id="age">
+            20
+        </div>
+        <div id="location">
+            Princeton
+            <i class="fa fa-map-marker" style="color:red; opacity:0.5"></i>
+        </div>
+    </div>
+
+</div>
+
+<a href="{% url 'polls:detail' q.id|move_right %}">
+<div id="navRight" class="changeQ">
+    <i class="fa fa-angle-right"></i>
+</div>
+</a>
+<a href="{% url 'polls:detail' q.id|move_left %}">
+<div id="navLeft" class="changeQ">
+    <i class="fa fa-angle-left"></i>
+</div>
+</a>
+
+</body>
+
+
+
+
+</html>

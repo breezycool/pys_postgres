@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>polled you so</title>
+    {% load staticfiles %}
+    {% load app_filters %}
+    <link rel="stylesheet" type="text/css" href="{% static 'ajax/index.css' %}">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <!-- jquery UI -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script src="{% static 'polls/js/polls.js' %}"></script>
+</head>
+
+
+<body>
+
+<div id="qlist">
+    <ul>
+    {% for q in qlist %}
+        <li class="q"></li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div id="navbar" class="stuckBar">
+    <div id="logo">
+        <div id="big"></div>
+        <div id="med"></div>
+        <div id="small"></div>
+    </div>
+    <div id="locToggle">
+        <div id="near">near</div><div id="far">far</div>
+    </div>
+    <div id="userInfo">
+        <div id="gender">
+            <i class="fa fa-mars"></i>
+            <i class="fa fa-venus" style="display:none"></i>
+        </div>
+        <div id="age">
+            20
+        </div>
+        <div id="location">
+            Princeton
+            <i class="fa fa-map-marker" style="color:red; opacity:0.5"></i>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

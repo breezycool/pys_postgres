@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+	<title>polled you so</title>
+	{% load staticfiles %}
+	{% load app_filters %}
+	<link rel="stylesheet" type="text/css" href="{% static 'polls/new_index.css' %}">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<!-- jquery UI -->
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+	<script src="{% static 'polls/js/polls.js' %}"></script>
+	<script src="{% static 'polls/js/facebook.js' %}"></script>
+	<script src="{% static 'polls/js/modal.js' %}"></script>
+</head>
+
+
+<body>
+	<!-- initialize facebook stuff -->
+	<div id="overlay">
+	</div>
+
+	<div id="card">
+		<div id="question"> {{ q.text }} </div>
+		{% for a in q.answer_set.all %}
+		<!--<div class="answer display">-->
+		<div class='answer display'>
+			<a class='user_answer' href='/polls/answered/{{ q.id }}/{{ a.id }}'>
+					{{ a.text }}
+			</a>
+		</div>
+		{% endfor %}
+	</div>
+	<div id="data">
+		<div id="map"></div>
+	</div>
+
+	<div id="uploadQuestion" onsubmit="submitQuestion()">
+		ask a question
+		<form>
+			<input type="text" placeholder="your question" id="yourQ" class="uploadField"><br>
+			number of possible answers:
+			<input type="number" id="numberAnsSelect">
+			<table id="numAnsSelect" style="width:100%">
+				<tr>
+					<td>1</td><td>2</td><td>3</td><td>4</td><td>5</td>
+				</tr>
+			</table>
+			<input type="text" placeholder="first answer" id="ans1" class="answer uploadField"><br>
+			<input type="text" placeholder="second answer" id="ans2" class="answer uploadField"><br>
+			<input type="text" placeholder="third answer" id="ans3" class="answer uploadField"><br>
+			<input type="text" placeholder="fourth answer" id="ans4" class="answer uploadField"><br>
+			<input type="text" placeholder="fifth answer" id="ans5" class="answer uploadField"><br>
+			<input type="submit">
+		</form>
+	</div>
+
+<div id="navbar" class="stuckBar">
+	<div id ="log-out" style="display: none;" >
+      <fb:login-button autologoutlink="true" onlogin="checkLoginState();"></fb:login-button>
+    </div>
+	<div id="logo">
+		<div id="big"></div>
+		<div id="med"></div>
+		<div id="small"></div>
+	</div>
+	<div id="locToggle">
+		<div id="near">near</div><div id="far">far</div>
+	</div>
+	<div id="userInfo">
+		<div id="gender">
+			<i class="fa fa-mars"></i>
+			<i class="fa fa-venus" style="display:none"></i>
+		</div>
+		<div id="age">
+			20
+		</div>
+		<div id="location">
+			Princeton
+			<i class="fa fa-map-marker" style="color:red; opacity:0.5"></i>
+		</div>
+	</div>
+
+</div>
+<div id="minimize">
+	<div id="questionMin"> {{ q.text }} </div>
+	<div id="answersMin">
+		{% for a in q.answer_set.all %}
+		<span>{{ a.text }}</span>
+		{% endfor %}
+	</div>
+	<!-- need to calibrate percentages with database data -->
+	<div id="percentsMin">
+		{% for a in q.answer_set.all %}
+		<span> 17% </span>
+		{% endfor %}
+	</div>
+</div>
+
+
+<div id="clickToAsk" class="stuckBar">
+	ask a question
+</div>
+<a href="{% url 'polls:detail' q.id|move_right %}">
+<div id="navRight" class="changeQ">
+	<i class="fa fa-angle-right"></i>
+</div>
+</a>
+<a href="{% url 'polls:detail' q.id|move_left %}">
+<div id="navLeft" class="changeQ">
+	<i class="fa fa-angle-left"></i>
+</div>
+</a>
+
+</body>
+
+
+
+
+</html>
