@@ -32,31 +32,33 @@
 
 	<!-- Custom JS -->
 	<script src="{% static 'current/js/main.js' %}"></script>
+	<!--
+	<script>
+			var sounds = new createjs.LoadQueue();
+			sounds.installPlugin(createjs.Sound);
+			sounds.loadManifest([{id:"C3", src: "{% static 'current/assets/dooSounds/Doo - C3.mp3' %}"},
+											{id:"D3", src: "{% static 'current/assets/dooSounds/Doo - D3.mp3' %}"},
+											{id:"E3", src: "{% static 'current/assets/dooSounds/Doo - E3.mp3' %}"},
+											{id:"F3", src: "{% static 'current/assets/dooSounds/Doo - F3.mp3' %}"},
+											{id:"G3", src: "{% static 'current/assets/dooSounds/Doo - G3.mp3' %}"},
+											{id:"A3", src: "{% static 'current/assets/dooSounds/Doo - A3.mp3' %}"},
+											{id:"B3", src: "{% static 'current/assets/dooSounds/Doo - B3.mp3' %}"},
+											{id:"C4", src: "{% static 'current/assets/dooSounds/Doo - C4.mp3' %}"},
+											{id:"D4", src: "{% static 'current/assets/dooSounds/Doo - D4.mp3' %}"},
+											{id:"E4", src: "{% static 'current/assets/dooSounds/Doo - E4.mp3' %}"},
+											{id:"F4", src: "{% static 'current/assets/dooSounds/Doo - F4.mp3' %}"},
+											{id:"G4", src: "{% static 'current/assets/dooSounds/Doo - G4.mp3' %}"},,
+											{id:"A4", src: "{% static 'current/assets/dooSounds/Doo - A4.mp3' %}"},
+											{id:"B4", src: "{% static 'current/assets/dooSounds/Doo - B4.mp3' %}"}]);
+
+			var soundIDs = ["C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4", "F4", "G4", "A4", "B4"];
+	</script>
+	-->
 	<script src="{% static 'current/js/data.js' %}"></script>
 	<script src="{% static 'current/js/askQuestion.js' %}"></script>
 	<script src="{% static 'current/js/modal.js' %}"></script>
 	<script src="{% static 'current/js/facebook.js' %}"></script>
 	<script src="{% static 'current/js/ball-pit.js' %}"></script>
-
-<!--
-	<script>
-
-		$(function() {
-			var sampleJSON = '{ "answers" : [' +
-			'{ "answer":"tenderly" , "frequency": 20 , "maleFrequency": 3, "femaleFrequency": 6, "ageFreqs": [5, 2, 3, 1, 5, 0, 9, 10]},' +
-			'{ "answer":"anxiously" , "frequency": 50 , "maleFrequency": 6, "femaleFrequency": 19, "ageFreqs": [0, 2, 3, 1, 2, 1, 5, 2]},' +
-			'{ "answer":"masturbatorily" , "frequency": 10 , "maleFrequency": 10, "femaleFrequency": 1, "ageFreqs": [3, 2, 3, 1, 8, 5, 2, 3]},' +
-			'{ "answer":"discreetly" , "frequency": 15 , "maleFrequency": 2, "femaleFrequency": 7, "ageFreqs": [0, 2, 3, 4, 5, 7, 1, 4]},' +
-			'{ "answer":"wut is luv" , "frequency": 5 , "maleFrequency": 4, "femaleFrequency": 6, "ageFreqs": [10, 2, 3, 1, 5, 4, 2, 0]}]}';
-
-
-			buildPieChart(sampleJSON, 'piePreview');
-		});
-
-
-	</script>
-
--->
 
 </head>
 

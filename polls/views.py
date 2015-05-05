@@ -25,19 +25,7 @@ from geopy.distance import vincenty
 # ---------------------- ajax site views ------------------------------
 
 # function used in ajax views to return the next 50 questions relevant
-# to user, NOT A VIEW.
-
-# get 50 closest questions ---------------
-#    current_location = user.location
-#    radius = 5 
-#    if ran == 'near':
-#        qs = Question.objects.filter(location__distance_lte=(current_location, radius))
-#    elif ran == 'far':
-#        qs = Question.objects.filter(location__distance_gte=(current_location, radius))
-
-    #qs = qs.order_by(location)
-    #qs = sorted(qs, key= lambda t: t.location.distance(current_location))
-# ----------------------------------------
+# to user
 def getQuestions(user_pk, ran):
     questions = []
     try:
@@ -89,7 +77,7 @@ def flag_question(request):
         question = Question.objects.get(pk=question_pk)
         if not question.flags.filter(pk=user.pk).exists():
             # don't need to check, as flags will remain the same if already exists
-            #question.flags.add(user)
+            question.flags.add(user)
             data = {'success': 'question flagged; question now has {0} flags'.format(question.flags.count())}
         else:
             data = {'error': 'question has already been flagged by this user'}
@@ -104,8 +92,7 @@ def get_questions(request):
         user_pk = int(request.POST.get('user_pk'))
         ran = request.POST.get('type')
         # get user-relevant questions
-        questions = getQuestions(user_pk, ran) #hardcoded
-        #questions = Question.objects.order_by('-pub_date')[:2]
+        questions = getQuestions(user_pk, ran)
 
         data = {}
         for q in questions:
@@ -340,10 +327,9 @@ def save_answers(request):
                     #return HttpResponse(json.dumps({"answer": answer.text}))
                     # all is well, add to database
                     if user.answer_set.filter(question=answer.question).count()==0:
-                        pass
-                        #answer.users.add(user)
+                        answer.users.add(user)
                         # NEED TO INCLUDE TIMESTAMP FROM AJAX, index 2, to fix
-                        #AnswerInfo(answer=answer,user=user).save() # time set to now by default
+                        AnswerInfo(answer=answer,user=user).save() # time set to now by default
                     else:
                         errors[answer_pk] = "question is already in our database"
 

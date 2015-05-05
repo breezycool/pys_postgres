@@ -32,28 +32,6 @@ $(function() {
 
     //answeredQuestions = []; // will hold questions user answered
 
-    // Load all sound assets with PreloadJS
-    sounds = new createjs.LoadQueue();
-    sounds.installPlugin(createjs.Sound);
-    sounds.loadManifest([{id:"C3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+C3.mp3"},
-    	{id:"D3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+D3.mp3"},
-    	{id:"E3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+E3.mp3"},
-    	{id:"F3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+F3.mp3"},
-    	{id:"G3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+G3.mp3"},
-    	{id:"A3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+A3.mp3"},
-    	{id:"B3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+B3.mp3"},
-    	{id:"C4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+C4.mp3"},
-    	{id:"D4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+D4.mp3"},
-    	{id:"E4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+E4.mp3"},
-    	{id:"F4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+F4.mp3"},
-    	{id:"G4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+G4.mp3"},
-    	{id:"A4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+A4.mp3"},
-    	{id:"B4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+B4.mp3"}]);
-
-soundIDs = ["C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4", "F4", "G4", "A4", "B4"];
-
-
-
 });
 var currentView = 'freqData'; // tracks current data display for toggling on and off when new data is selected
 
@@ -220,7 +198,8 @@ $(document).on('click', '.liAnswer', function() {
 
 // change type of questions we are looking for (near or far?)
 $(document).on('click', '#locToggle > div', function() {
-
+    if (currentPage == 'profile')
+        return;
     // don't do anything unless we click a new toggle
     if (!$(this).hasClass('selected')) {
     	var htmlID = $(this).attr('id');
