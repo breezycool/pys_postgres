@@ -63,8 +63,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'pyspys',
-        'USER': 'breezy',
-        'PASSWORD': 'polledyouso',
+        'USER': 'terrencekuo',
+        #'PASSWORD': 'polledyouso',
         #'HOST': '127.0.0.1',
         #'PORT': '5432',
     }
@@ -89,6 +89,13 @@ USE_TZ = True
 
 STATIC_ROOT = 'polls/static/'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),    
-]
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "polls"),    
+)
+
+# Parse database configuration from $DATABASE_URL
+#import dj_database_url
+#DATABASES['default'] =  dj_database_url.config()
+
+# Enable Connection Pooling
+#DATABASES['default']['ENGINE'] = 'django_postgrespool'

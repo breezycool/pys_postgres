@@ -21,6 +21,21 @@ def f(request):
 def answeredqs(request, qlist):
     return render(request, 'polls/answeredqs.html', {'qlist':qlist})
 
+from math import radians, cos, sin, asin, sqrt
+def haversine(lon1, lat1, lon2, lat2):
+    """
+    Calculate the great circle distance between two points 
+    on the earth (specified in decimal degrees)
+    """
+    # convert decimal degrees to radians 
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    # haversine formula 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    km = 6367 * c
+    return km
 # ---------------------- ajax site views ------------------------------
 
 # function used in ajax views to return the next 50 questions relevant
@@ -44,13 +59,24 @@ def getQuestions(user_pk, ran):
     except:
         return questions
 
-    current_lat = user.lat
-    current_lon = user.lon
+    lat = user.lat
+    lon = user.lon
     radius = 5 
-    #if ran == 'near':
-    #    qs = Question.objects.filter(location__distance_lt=(current_location, D(m=radius)))
-    #    qs = Question.objects.filter(location__distance_gt=(current_location, D(m=radius)))
     qs = Question.objects.order_by('-pub_date') # this will be relative to the user's location
+
+    # probably very inefficient, can do this better
+    """
+    if ran == 'near':
+        for q in qs:
+            # exclude all questions outside five km radius
+            if haversine(lon,lat,q.lon,q.lat) > radius:
+                qs = qs.exclude(pk=q.pk)
+    elif ran == 'far':
+        for q in qs:
+            # exclude all questions inside five mile radius
+            if haversine(lon,lat,q.lon,q.lat) < radius:
+                qs = qs.exclude(pk=q.pk)
+    """
 
     # exclude already answered (or flagged) questions
     for each in user.answer_set.all():
