@@ -11,9 +11,11 @@ $(function() {
     var answeredQuestions;
 
     // is the user currently on the profile or polls page
-    currentPage = 'profile';
+    currentPage = 'polls';
 
+    noWorld = true;
 
+    loadComplete = false;
 
 
     // for testing locally
@@ -33,35 +35,22 @@ $(function() {
     // Load all sound assets with PreloadJS
     sounds = new createjs.LoadQueue();
     sounds.installPlugin(createjs.Sound);
-    /*sounds.loadManifest([{id:"C4", src: "assets/sounds/celesta-C4.mp3"},
-                       {id:"C#4", src: "assets/sounds/celesta-C-sharp-4.mp3"},
-                       {id:"D4", src: "assets/sounds/celesta-D4.mp3"},
-                       {id:"Eb4", src: "assets/sounds/celesta-Eb4.mp3"},
-                       {id:"E4", src: "assets/sounds/celesta-E4.mp3"},
-                       {id:"F4", src: "assets/sounds/celesta-F4.mp3"},
-                       {id:"F#4", src: "assets/sounds/celesta-F-sharp-4.mp3"},
-                       {id:"G4", src: "assets/sounds/celesta-G4.mp3"},
-                       {id:"Ab4", src: "assets/sounds/celesta-Ab4.mp3"},
-                       {id:"A4", src: "assets/sounds/celesta-A4.mp3"},
-                       {id:"Bb4", src: "assets/sounds/celesta-Bb4.mp3"},
-                       {id:"B4", src: "assets/sounds/celesta-B4.mp3"},
-                       {id:"C5", src: "assets/sounds/celesta-C5.mp3"},
-                       {id:"C#5", src: "assets/sounds/celesta-C-sharp-5.mp3"},
-                       {id:"D5", src: "assets/sounds/celesta-D5.mp3"},
-                       {id:"Eb5", src: "assets/sounds/celesta-Eb5.mp3"},
-                       {id:"E5", src: "assets/sounds/celesta-E5.mp3"},
-                       {id:"F5", src: "assets/sounds/celesta-F5.mp3"},
-                       {id:"F#5", src: "assets/sounds/celesta-F-sharp-5.mp3"},
-                       {id:"G5", src: "assets/sounds/celesta-G5.mp3"},
-                       {id:"Ab5", src: "assets/sounds/celesta-Ab5.mp3"},
-                       {id:"A5", src: "assets/sounds/celesta-A5.mp3"},
-                       {id:"Bb5", src: "assets/sounds/celesta-Bb5.mp3"},
-                       {id:"B5", src: "assets/sounds/celesta-B5.mp3"},
-                       {id:"C6", src: "assets/sounds/celesta-C6.mp3"}]); */
+    sounds.loadManifest([{id:"C3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+C3.mp3"},
+    	{id:"D3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+D3.mp3"},
+    	{id:"E3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+E3.mp3"},
+    	{id:"F3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+F3.mp3"},
+    	{id:"G3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+G3.mp3"},
+    	{id:"A3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+A3.mp3"},
+    	{id:"B3", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+B3.mp3"},
+    	{id:"C4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+C4.mp3"},
+    	{id:"D4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+D4.mp3"},
+    	{id:"E4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+E4.mp3"},
+    	{id:"F4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+F4.mp3"},
+    	{id:"G4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+G4.mp3"},
+    	{id:"A4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+A4.mp3"},
+    	{id:"B4", src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+B4.mp3"}]);
 
-soundIDs = ["C4", "C#4", "D4", "Eb4", "E4", "F4", "F#4", "G4", "Ab4", "A4", "Bb4", "B4",
-"C5", "C#5", "D5", "Eb5", "E5", "F5", "F#5", "G5", "Ab5", "A5", "Bb5", "B5", "C6"
-];
+soundIDs = ["C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4", "F4", "G4", "A4", "B4"];
 
 
 
@@ -131,47 +120,56 @@ GOOGLE MAPS END */
 
 $(document).on('click', '#profile', function() {
 	// switch to profile view
-	if ($(this).text() == 'profile') {
+	if (currentPage == 'polls') {
+		$('#navRight').trigger('click');
+		currentPage = 'profile';
 		$(this).text('polls');
 		$('#card,#minimize,#data,#navLeft,#navRight,#near,#far').hide();
+		$('#freqData,#genderData,#ageData,#balls,#music').html('');
 		$('#profileHeader, #myQs, #piePreview').show();
 		getMyQs();
 	}
 	// switch to polls view
 	else {
+		currentPage = 'polls';
 		$(this).text('profile');
 		$('#myQs,#piePreview,#minimize,#data,#navLeft,#navRight,#profileHeader').hide();
-		$('#card').show();
-	}
-
-
-});
-
-// preview pie chart on mouseover
-$('#myQs > ul > li').on('mouseover', function() {
-	console.log('moused over');
-	var currQID = $(this).data('qid');
-	for (var i = 0; i < myQsJSON.length; i++) {
-		if (myQsJSON[i].qID == currQID) {
-			sampleJSON = myQsJSON[i];
-			buildPieChart(sampleJSON, 'piePreview');
-			break;
-		}
+		$('#card,#near,#far').show();
 	}
 });
+
+
 
 $(document).on('click', '#myQs > ul > li', function() {
     // sampleJSON for curr q already loaded from mouseover
     $('#questionMin').text(sampleJSON.question);
     $('#answersMin').html(''); // reset min answers
-    for (var i = 0; i < currAnswers.length; i++)
-    	$('#answersMin').append('<span data-question-id="' + prevqID + '">' + sampleJSON.answers[i].answer + '</span>')
+    console.log('answers to be loaded are:')
+    for (var i = 0; i < sampleJSON.answers.length; i++) {
+    	$('#answersMin').append('<div><div data-question-id="' + prevqID + '">' + sampleJSON.answers[i].answer + '</div></div>')
+    }
+
+
+
 
     $('#myQs').hide();
     $('#piePreview').hide();
     $('#minimize').show();
     $('#navLeft').show();
-    $('#data').show();
+    $('#data').show(500);
+    $('#dataViews > span').each(function() {
+    	if ($(this).hasClass('selected')) {
+    		$(this).removeClass('selected');
+    	}
+    });
+
+    
+    window.setTimeout(function() {
+    	$('#freqView').trigger('click');
+    },500);
+
+
+
 });
 
 
@@ -179,6 +177,10 @@ $(document).on('click', '#myQs > ul > li', function() {
 // click on a question's answer
 $(document).on('click', '.liAnswer', function() {
 	alreadyAnswered = true;
+	window.setTimeout(function() {
+		$('#freqView').trigger('click');
+
+	},600)
 
     $('#navLeft').hide(); // can't go back after answer a new question
 
@@ -201,18 +203,18 @@ $(document).on('click', '.liAnswer', function() {
     $('#questionMin').text(currQuestion);
     $('#answersMin').html(''); // reset min answers
     for (var i = 0; i < currAnswers.length; i++)
-    	$('#answersMin').append('<span data-question-id="' + prevqID + '" data-answer-id="' + currAnswers[i][0] + '">' + currAnswers[i][1] + '</span>')
+    	$('#answersMin').append('<div><div data-question-id="' + prevqID + '" data-answer-id="' + currAnswers[i][0] + '">' + currAnswers[i][1] + '</div></div>')
 
-    $('#card').hide('drop', 500);
+    $('#card').slideUp(500);
     // highlight selected answer in minimized view
-    $('#answersMin > span').each(function() {
-    	currAnsID = $(this).data('answerId');
+    $('#answersMin > div').each(function() {
+    	currAnsID = $(this).children().data('answerId');
     	if (currAnsID == selectedAnswer) {
-    		$(this).css('box-shadow', '0px 3px 7px #333, 0px -3px 7px #333');
+    		$(this).css('box-shadow', '0 4px 2px -2px #333');
     	}
     });
-    $('#minimize').show('drop', 500);
-    $('#data').show('drop', 500);
+    $('#minimize').show();
+    $('#data').slideDown(500);
     $('#navRight').show();
 });
 
@@ -234,11 +236,12 @@ $(document).on('click', '#locToggle > div', function() {
     $(this).addClass('selected');
 
     $('#minimize,#data,#navLeft,#navRight').hide();
-    $('#card').show('drop', 500);
+    $('#card').slideDown(500);
 });
 
 // click on a data view
 $(document).on('click', '#dataViews > span', function() {
+
     // load new data view
     if (!$(this).hasClass('selected')) {
     	htmlID = $(this).attr('id');
@@ -246,41 +249,71 @@ $(document).on('click', '#dataViews > span', function() {
     		case 'freqView':
     		$('#' + currentView).fadeOut(250);
     		$('#freqData').fadeIn(250);
-    		buildPieChart(sampleJSON1, 'freqData');
+    		buildPieChart(sampleJSON, 'freqData');
     		currentView = 'freqData';
     		break;
     		case 'genderView':
     		$('#' + currentView).fadeOut(250);
     		$('#genderData').fadeIn(250);
-    		buildGenderChart(sampleJSON1);
+    		buildGenderChart(sampleJSON);
     		currentView = 'genderData';
     		break;
     		case 'ageView':
     		$('#' + currentView).fadeOut(250);
     		$('#ageData').fadeIn(250);
-    		buildAgeChart(sampleJSON1);
+    		buildAgeChart(sampleJSON);
     		currentView = 'ageData';
     		break;
     		case 'ballPit':
     		$('#' + currentView).fadeOut(250);
     		$('#balls').fadeIn(250);
-    		addBodies(globalWorld, globalPhysics, sampleJSON1);
-    		currentView = 'balls';
-    		break;
-    		case 'musicView':
-    		$('#' + currentView).fadeOut(250);
-    		$('#music').fadeIn(250);
-    		buildMusicalCircles(sampleJSON1);
-    		currentView = 'music';
-    		break;       
-    	}
 
-    	if (htmlID != 'ballPit')
-    		clearWorld();
-    }
+    		if (noWorld) {
+		// initiate physics world
+		window.PIXI = globalPIXI;
+		globalPHYSICS(worldConfig, [
+			initWorld,
+			addInteraction,
+			startWorld
+			]);
+		noWorld = false;
+	}
+	addBodies(globalWorld, globalPhysics, sampleJSON);
+	currentView = 'balls';
+	break;
+	case 'musicView':
+	$('#' + currentView).fadeOut(250);
+	$('#music').fadeIn(250);
+	buildMusicalCircles(sampleJSON);
+	currentView = 'music';
+	break;       
+}
 
-    $('#dataViews > span').removeClass('selected');
-    $(this).addClass('selected');
+if (htmlID != 'ballPit' && !noWorld)
+	clearWorld();
+
+if (htmlID != 'musicView') {
+	createjs.Sound.stop();
+           // clear all timeouts
+           if (activeTimeouts != null) {
+           	var length = activeTimeouts.length;
+           	for (var i = 0; i < length; i++)
+           		clearInterval(activeTimeouts[i]);    
+           	activeTimeouts = [];
+           }
+           
+           // clear all intervals
+           if (activeIntervals != null) {
+           	var length = activeIntervals.length;
+           	for (var i = 0; i < length; i++)
+           		clearInterval(activeIntervals[i]);    
+           	activeIntervals = [];
+           }
+       }
+   }
+
+   $('#dataViews > span').removeClass('selected');
+   $(this).addClass('selected');
 });
 
 
@@ -322,10 +355,10 @@ $(document).on('click', '#navRight', function() {
             saveAnswers(userID, answeredQuestions);
         }
     }
+    $('#minimize').hide();
+    $('#data').slideUp(500);
 
-    $('#minimize').hide('drop', 500);
-    $('#data').hide('drop', 500);
-    $('#card').show('drop', 500);
+    $('#card').slideDown(500);
 });
 
 // click on left arrow button
@@ -333,22 +366,23 @@ $(document).on('click', '#navLeft', function() {
 	if (currentPage == 'polls') {
 		$('#navLeft').hide();
 		$('#navRight').show();
-		$('#card').hide('drop', 500);
-		$('#minimize').show('drop', 500);
-		$('#data').show('drop', 500);
+		$('#card').slideUp(500);
+		$('#minimize').show();
+		$('#data').slideDown(500);
 	} else {
-		$('#myQs').show();
-		$('#piePreview').show();
+		$('#freqData,#genderData,#ageData,#balls,#music').html('');
+		$('#myQs').slideDown(500);
+		$('#piePreview').slideDown(500);
 		$('#minimize').hide();
 		$('#navLeft').hide();
-		$('#data').hide();
+		$('#data').slideUp(500);
 	}
 });
 
 // flag the question
 $(document).on('click', '#flag', function() {
 	$('#overlay').show();
-	$('#flagModal').show('drop', 500);
+	$('#flagModal').slideDown(500);
 });
 $(document).on('click', '#flagModal > div', function() {
 	closeModal();
@@ -386,6 +420,9 @@ function getLocation() {
 function usePosition(position) {
 	$('progress').hide();
 	$('#overlay').slideUp(300);
+	window.setTimeout(function() {
+		loadComplete = true;
+	},300)
 	$('#allow').hide();
 	var lat = position.coords.latitude;
 	var lng = position.coords.longitude;
@@ -567,20 +604,18 @@ function getData(answerID) {
 		beforeSend: function() {},
 		success: function(data) {
 			sampleJSON = data;
-           // set data view back to pie chart
-           if (currentView != 'freqData') {
-           	$('#' + currentView).fadeOut(250);
-           	$('#freqData').fadeIn(250);
-           	currentView = 'freqData';
-           }
-           buildPieChart(sampleJSON, 'freqData');
-           $('#dataViews > span').removeClass('selected');
-           $('freqView').addClass('selected');
-       },
-       error: function(e) {
-       	console.log(e);
-       }
-   });
+			window.setTimeout(function() {
+				$('#freqView').trigger('click');
+
+			},600)
+			buildPieChart(sampleJSON, 'freqData');
+			$('#dataViews > span').removeClass('selected');
+			$('freqView').addClass('selected');
+		},
+		error: function(e) {
+			console.log(e);
+		}
+	});
 }
 
 // Send <= 30 answers from the user to the database
@@ -639,7 +674,6 @@ function saveU(userObj) {
 		beforeSend: function() {},
 		success: function(data) {
 			data = JSON.parse(data);
-            console.log(data)
 			console.log(data['user_pk']);
 			userID = data['user_pk'];
 			getQuestions(userID, currQType);
@@ -686,12 +720,48 @@ function getMyQs() {
 		},
 		beforeSend: function() {},
 		success: function(data) {
+			$('#myQs > ul').html('');
 			console.log('success?');
 			console.log(JSON.parse(data));
 			myQsJSON = JSON.parse(data);
 			for (var i = 0; i < myQsJSON.length; i++) {
 				$('#myQs > ul').append('<li data-qid="' + myQsJSON[i].qID + '">' + myQsJSON[i].question + '</li>');
 			}
+			// preview pie chart on mouseover
+			$('#myQs > ul > li').on('mouseover', function() {
+				// reset
+				$('#myQs > ul > li').css('border', 'none');
+				$('#myQs > ul > li').css('zoom', '1');
+
+				// focusing on element
+				$(this).css('border', 'solid #7D26CD 1px');
+				$(this).css('zoom','1.5');
+
+				$('#piePreview').html('');
+				console.log('moused over');
+				var currQID = $(this).data('qid');
+				console.log(myQsJSON);
+				// find correct question/poll for which to display data
+				for (var i = 0; i < myQsJSON.length; i++) {
+					if (myQsJSON[i].qID == currQID) {
+						sampleJSON = myQsJSON[i];
+						console.log(sampleJSON)
+
+						// see if 0 users have answered
+						var totalFreq = 0;
+						for (var i = 0; i < sampleJSON.answers.length; i++) {
+							totalFreq += sampleJSON.answers[i].frequency;
+						}
+						if (totalFreq == 0) {
+							$('#piePreview').html('no data for this poll yet!');
+							break;
+						}
+
+						buildPieChart(sampleJSON, 'piePreview');
+						break;
+					}
+				}
+			});
 		},
 		error: function(e) {
 			console.log('error?')
@@ -714,6 +784,14 @@ function bdayToAge(birthday) {
     var ageInYrs = Math.abs(UTCyr - epoch);
 
     return ageInYrs;
+}
+
+// close modal question window and overlay
+function closeModal() {
+	$('#uploadQuestion').slideUp(250);
+	$('#flagModal').slideUp(250);
+	$('#login').slideUp(250);
+	$('#overlay').slideUp(250);
 }
 
 // cleanup if user exits early

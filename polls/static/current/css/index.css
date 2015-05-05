@@ -96,6 +96,7 @@ div {
 	height:calc(100vh - 190px);
 	text-align: center;
 	font-size:2em;
+	z-index: -1;
 }
 #freqData {
 	display: none;
@@ -104,7 +105,9 @@ div {
 }
 #balls {
 	display: none;
-
+}
+#balls > canvas {
+	max-width: 100%;
 }
 #map {
 	display: none;
@@ -183,16 +186,14 @@ div {
 	background: white;
 	box-shadow: 0 1px 5px lightgrey;
 	cursor: default;
+	/*
 	-webkit-transition: all 0.25s ease-in-out;
 	-moz-transition: all 0.25s ease-in-out;
 	-ms-transition: all 0.25s ease-in-out;
 	-o-transition: all 0.25s ease-in-out;
-}
-#myQs > ul > li:hover {
-	zoom: 1.5;
+	transition: all 0.25s ease-in-out;
+	*/
 	cursor: pointer;
-	border:solid #7D26CD 1px;
-
 }
 #piePreview {
 	display: none;
@@ -286,7 +287,7 @@ div {
 	text-align: center;
 	background: white;
 	border-radius: 5px;
-	z-index: 11;
+	z-index: 30;
 }
 #flagModal > h2 {
 	margin-bottom:100px;
@@ -400,11 +401,16 @@ td:hover {
 	box-shadow: 0 1px 5px #333;
 }
 #userSelections > ul {
+	position: relative;
 	display: none;
+	z-index: 1000;
+
 }
 #userSelections > ul > li {
 	padding-top:10px;
 	padding-bottom:10px;
+	z-index: 1000;
+
 }
 #userSelections > ul > li:hover {
 	background:#D8BEF0;
@@ -485,7 +491,7 @@ progress[value]::-moz-progress-bar
 
 #logo {
 	text-align: left;
-	width:40%;
+	width:35%;
 }
 #logo > div {
 	vertical-align: middle;
@@ -544,7 +550,7 @@ progress[value]::-moz-progress-bar
 	color: white;
 }
 #userInfo {
-	width:40%;
+	width:35%;
 	text-align: right;
 	cursor: pointer;
 }
@@ -580,6 +586,7 @@ progress[value]::-moz-progress-bar
 	text-align: center;
 	line-height: 50px;
 	font-size: 1.5em;
+	z-index:-1; 
 }
 #questionMin > span {
 	display: none;
@@ -590,34 +597,43 @@ progress[value]::-moz-progress-bar
 #answersMin {
 	position: absolute;
 	display: table;
+	table-layout: fixed;
 	left:0;
 	top:100px; /* displacement from navbar and questionMin */
 	width: 100%;
 	text-align: center;
 	line-height: 40px; 
 	font-size: 1.25em;
+	z-index: ;
+	overflow: scroll;
+	z-index:-1;
 }
-#answersMin > span {
+#answersMin > div {
 	display: table-cell;
-	position: relative;
-	background: white;
-	width: 20%;
-	font-size: 1.5vw;
-	color:white;
+	width:10px;
+	overflow: scroll;
+	padding-left:10px;
+	padding-right: 10px;
 }
-#answersMin > span:first-child {
+/* nested div required for max-height within table cell */
+#answersMin > div > div {
+	max-height: 40px;
+	overflow: scroll;
+	white-space: nowrap;
+}
+#answersMin > div:first-child {
 	background: #F68E55;
 }
-#answersMin > span:nth-child(2) {
+#answersMin > div:nth-child(2) {
 	background: #3BB878;
 }
-#answersMin > span:nth-child(3) {
+#answersMin > div:nth-child(3) {
 	background: #00BFF3;
 }
-#answersMin > span:nth-child(4) {
+#answersMin > div:nth-child(4) {
 	background: #855FA8;
 }
-#answersMin > span:nth-child(5) {
+#answersMin > div:nth-child(5) {
 	background: #F06EA9;
 }
 #dataViews {
@@ -722,10 +738,24 @@ svg {
 	#navRight {
 		display: none;
 	}
+	#locToggle {
+		width: 50%;		
+	}
 	#logo {
 		display: none !important;
 	}
-	#userInfo {
+	#gender,#age,#location {
 		display: none !important;
+	}
+	#userInfo {
+		width:50%;
+	}
+	.fa-bars {
+		display: block !important;
+	}
+	.fa-bars:hover {
+		border:solid #7D26CD 1px;
+		background:#7D26CD;
+		color: white;
 	}
 }

@@ -78,8 +78,7 @@ function facebookLogin() {
 $(document).on('click','#logout', function() {
   FB.logout(function(response) {
     console.log(response);
-    $('#overlay').show('drop', 500);
-    $('#login').show('drop', 500);
+    $('#overlay,#login').slideDown(500);
 })
 });
 

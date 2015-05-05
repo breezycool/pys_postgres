@@ -7,9 +7,9 @@
 	<title>polled you so</title>
 	{% load staticfiles %}
 	<link rel="stylesheet" type="text/css" href="{% static 'current/css/index.css' %}">
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
-	<!--Load the Google AJAX API-->
+	<!--Load the Google hosted libraries -->
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
@@ -102,14 +102,13 @@
 		<ul>
 			<!--<li data-qid="3">my first q and thiasd foasdif asodf asdof asdof iasd foiasd fosadi faoi  asdof iahsdof iadsh ofiadsh ofiahsdof i</li>
 			<li data-qid="4">my second q</li>-->
-		
+
 
 		</ul>
 	</div>
 
 	<div id="piePreview">
 		Hover over (or click!) one of your questions to see some data
-
 	</div>
 
 	<div id="allDone"><span style="color:#7D26CD">Congratulations!</span> You've clicked through all of the near polls.<br><br>Change your location query to far (above), ask your own question (below), or explore some other parts of the site!
@@ -122,22 +121,24 @@
 
 	<div id="data">
 		<div id="dataViews">
-			<span id="freqView" class="selected">overall</span>
+			<span id="freqView">overall</span>
 			<span id="genderView">gender</span>
 			<span id="ageView">age</span>
 			<span id="ballPit">ball pit</span>
 			<span id="musicView">music</span>
 		</div>
+
 		<div id="freqData"></div>
 		<div id="genderData"></div>
 		<div id="ageData"></div>
 		<div id="balls"></div>
 		<canvas id="music"></canvas>
+		
 	</div>
 
 	<div id="uploadQuestion" onsubmit="submitQuestion()">
 		<form>
-			<div class="uploadField">ask a question</div>
+			<div class="uploadField">submit a poll</div>
 			<input type="text" placeholder="your question" id="yourQ" class="uploadField">
 			<div class="uploadField">number of possible answers: <input type="number" id="numberAnsSelect"></div>
 			<table id="numAnsSelect" style="width:100%">
@@ -145,11 +146,11 @@
 					<td>2</td><td>3</td><td>4</td><td>5</td>
 				</tr>
 			</table>
-			<input type="text" placeholder="first answer" id="ans1" class="answer uploadField"><br>
-			<input type="text" placeholder="second answer" id="ans2" class="answer uploadField"><br>
-			<input type="text" placeholder="third answer" id="ans3" class="answer uploadField"><br>
-			<input type="text" placeholder="fourth answer" id="ans4" class="answer uploadField"><br>
-			<input type="text" placeholder="fifth answer" id="ans5" class="answer uploadField"><br>
+			<input type="text" placeholder="first answer" id="ans1" class="answer uploadField" maxlength="40"><br>
+			<input type="text" placeholder="second answer" id="ans2" class="answer uploadField" maxlength="40"><br>
+			<input type="text" placeholder="third answer" id="ans3" class="answer uploadField" maxlength="40"><br>
+			<input type="text" placeholder="fourth answer" id="ans4" class="answer uploadField" maxlength="40"><br>
+			<input type="text" placeholder="fifth answer" id="ans5" class="answer uploadField" maxlength="40"><br>
 			<input type="submit">
 		</form>
 	</div>
@@ -194,28 +195,29 @@
 					<li id="logout">logout</li>
 				</ul>
 			</div>
+			<i class="fa fa-bars" style="border:solid black 1px; padding:10px; border-radius:3px; display:none; text-align:center;"></i>
 
 		</div>
 	</div>
 
 	<progress max="100" value="100"></progress>
 
-	<div id="allow">Please allow location services.</div>
+	<div id="allow">Please allow location services.<br><br>(It may take a few seconds to register your permission.)</div>
 
 	<div id="minimize">
 		<div id="questionMin">HOW ARE YOU USED TO LOVING?<span><i class="fa fa-star"></i></span></div>
 		<div id="answersMin">
-			<span>tenderly</span>
-			<span>anxiously</span>
-			<span>masturbatorily</span>
-			<span>discreetly</span>
-			<span>wut is luv</span>
+			<div><div>sillysillysillysillysillysillysillysillysillysilly</div></div>
+			<div><div>sillysillysillysillysillysillysilly</div></div>
+			<div><div>sillysillysillysillysilly sillysillysillys illysillysillysillysillysilly sillysillysillysillys illysillysillysillysillysilly</div></div>
+			<div><div>discreetly</div></div>
+			<div><div>wut is luv</div></div>
 		</div>
 	</div>
 
 
 	<div id="clickToAsk" class="stuckBar">
-		ask a question
+		submit a poll
 	</div>
 	<div id="navRight" class="changeQ">
 		<i class="fa fa-angle-right"></i>

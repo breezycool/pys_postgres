@@ -43,6 +43,8 @@ $(function() {
 	});
 
 	$('#overlay').click(function() {
+		if (!loadComplete)
+			return;
 		closeModal();
 	});
 
@@ -113,13 +115,7 @@ function trimWS(string1) {
 	return returnStr;
 }
 
-// close modal question window and overlay
-function closeModal() {
-	$('#uploadQuestion').hide('drop',250);
-	$('#flagModal').hide('drop', 250);
-	$('#login').hide('drop', 250);
-	$('#overlay').hide('drop', 250);
-}
+
 
 // reset question upload fields
 function resetUpload() {

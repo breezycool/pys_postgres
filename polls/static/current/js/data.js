@@ -3,24 +3,35 @@
 /* ------------------------------------------------------------------------------------------*/
 // Defines default colors for charts
 var dataColors = ["#F68E55", "#3BB878", "#00BFF3", "#855FA8", "#F06EA9"];
+var dataColorsAlt = ["0xF68E55", "0x3BB878", "0x00BFF3", "0x855FA8", "0xF06EA9"];
 
 // Stores all sounds IDs for playing musical data
 var soundIDs;
 
-// for testing only
-var sampleJSON1 = '{ "answers" : [' +
-    '{ "answer":"casey" , "frequency": 34 , "maleFrequency": 10, "femaleFrequency": 24, "ageFreqs": [10, 2, 3, 1, 5, 0, 9, 4]},' +
-    '{ "answer":"lachie" , "frequency": 65 , "maleFrequency": 16, "femaleFrequency": 49, "ageFreqs": [8, 10, 8, 3, 7, 12, 5, 11]},' +
-    '{ "answer":"jesse" , "frequency": 30 , "maleFrequency": 29, "femaleFrequency": 1, "ageFreqs": [3, 2, 6, 1, 8, 5, 2, 3]},' +
-    '{ "answer":"terrence" , "frequency": 25 , "maleFrequency": 12, "femaleFrequency": 13, "ageFreqs": [1, 1, 2, 4, 5, 7, 1, 4]},' +
-    '{ "answer":"definitely casey" , "frequency": 14 , "maleFrequency": 10, "femaleFrequency": 4, "ageFreqs": [3, 0, 2, 1, 3, 2, 2, 0]}]}';
+// stores active intervals and timeouts in order to clear when out of scope
+var activeIntervals = [];
+var activeTimeouts = [];
 
 // for testing only
+
+var sampleJSON1 = '{ "answers" : [' +
+'{ "answer":"casey" , "frequency": 34 , "maleFrequency": 10, "femaleFrequency": 24, "ageFreqs": [10, 2, 3, 1, 5, 0, 9, 4]},' +
+'{ "answer":"lachie" , "frequency": 65 , "maleFrequency": 16, "femaleFrequency": 49, "ageFreqs": [8, 10, 8, 3, 7, 12, 5, 11]},' +
+'{ "answer":"jesse" , "frequency": 30 , "maleFrequency": 29, "femaleFrequency": 1, "ageFreqs": [3, 2, 6, 1, 8, 5, 2, 3]},' +
+'{ "answer":"terrence" , "frequency": 25 , "maleFrequency": 12, "femaleFrequency": 13, "ageFreqs": [1, 1, 2, 4, 5, 7, 1, 4]},' +
+'{ "answer":"definitely casey" , "frequency": 14 , "maleFrequency": 10, "femaleFrequency": 4, "ageFreqs": [3, 0, 2, 1, 3, 2, 2, 0]}]}';
+
+// for testing only
+
 var sampleJSON2 = '{ "answers" : [' +
-    '{ "answer":"tenderly" , "frequency": 20 , "maleFrequency": 3, "femaleFrequency": 6, "ageFreqs": [5, 2, 3, 1, 5, 0, 9, 10]},' +
-    '{ "answer":"anxiously" , "frequency": 50 , "maleFrequency": 6, "femaleFrequency": 19, "ageFreqs": [0, 2, 3, 1, 2, 1, 5, 2]},' +
-    '{ "answer":"masturbatorily" , "frequency": 10 , "maleFrequency": 10, "femaleFrequency": 1, "ageFreqs": [3, 2, 3, 1, 8, 5, 2, 3]},' +
-    '{ "answer":"discreetly" , "frequency": 15 , "maleFrequency": 2, "femaleFrequency": 7, "ageFreqs": [0, 2, 3, 4, 5, 7, 1, 4]}]}';
+'{ "answer":"tenderly" , "frequency": 20 , "maleFrequency": 3, "femaleFrequency": 6, "ageFreqs": [5, 2, 3, 1, 5, 0, 9, 10]},' +
+'{ "answer":"anxiously" , "frequency": 50 , "maleFrequency": 6, "femaleFrequency": 19, "ageFreqs": [0, 2, 3, 1, 2, 1, 5, 2]},' +
+'{ "answer":"masturbatorily" , "frequency": 10 , "maleFrequency": 10, "femaleFrequency": 1, "ageFreqs": [3, 2, 3, 1, 8, 5, 2, 3]},' +
+'{ "answer":"discreetly" , "frequency": 15 , "maleFrequency": 2, "femaleFrequency": 7, "ageFreqs": [0, 2, 3, 4, 5, 7, 1, 4]}]}';
+
+var sampleJSON3 = '{ "answers" : [' +
+'{ "answer":"tenderly" , "frequency": 0 , "maleFrequency": 3, "femaleFrequency": 6, "ageFreqs": [5, 2, 3, 1, 5, 0, 9, 10]},' +
+'{ "answer":"anxiously" , "frequency": 50 , "maleFrequency": 6, "femaleFrequency": 19, "ageFreqs": [0, 2, 3, 1, 2, 1, 5, 2]}]}';
 
 // define stage for musical representation
 var stage;
@@ -29,9 +40,10 @@ var stage;
 // Draws a simple pie chart representation of the overall frequencies for each answer
 /* ------------------------------------------------------------------------------------------*/
 function buildPieChart(data, elID) {
-    console.log('about to parse the folloiwng data')
-    console.log(data);
-    var dataObject = JSON.parse(data);
+    if (typeof data != 'object')
+        var dataObject = JSON.parse(data);
+    else
+        var dataObject = data;
     
     // Create the data table.
     var data = new google.visualization.DataTable();
@@ -40,6 +52,7 @@ function buildPieChart(data, elID) {
 
     // Populate chart with answers and their corresponding frequencies
     $.each(dataObject.answers, function(key, value) {
+        // force legend to show unselected answers
         data.addRow([value.answer, value.frequency]);
     });
 
@@ -47,7 +60,8 @@ function buildPieChart(data, elID) {
     options = {
         'is3D':true,
         'colors': dataColors,
-        'backgroundColor': "#f7f7f7"
+        'backgroundColor': "#f7f7f7",
+        sliceVisibilityThreshold: 0
     };
 
     // Instantiate and draw our chart, passing in some options.
@@ -55,14 +69,18 @@ function buildPieChart(data, elID) {
     chart.draw(data, options);
 }
 
-
 /* ------------------------------------------------------------------------------------------*/
 // Draws a radar chart using male and female frequencies for each answer
 /* ------------------------------------------------------------------------------------------*/
 function buildGenderChart(data) {
+
+   if (typeof data != 'object')
     var dataObject = JSON.parse(data);
-    var dataArray = [['Gender', 'Men', 'Women']];
-    
+else
+    var dataObject = data;
+
+var dataArray = [['Gender', 'Men', 'Women']];
+
     // Populate chart with answers and their corresponding frequencies
     $.each(dataObject.answers, function(key, value) {
         dataArray.push([value.answer, value.maleFrequency, value.femaleFrequency]);
@@ -81,17 +99,19 @@ function buildGenderChart(data) {
     chart.draw(data, options);
 }
 
-
 /* ------------------------------------------------------------------------------------------*/
 // Draws a Combo Chart to display age groups 
 // Plots all frequencies according to set age groups
 /* ------------------------------------------------------------------------------------------*/
 function buildAgeChart(data) {
+   if (typeof data != 'object')
     var dataObject = JSON.parse(data);
-    var dataArray = [];
-    
-    dataArray.push(['Answers'], ['Under 14'], ['15-17'], ['18-21'], ['22-29'], ['30-39'], ['40-49'], ['Over 50']);
-    
+else
+    var dataObject = data;
+var dataArray = [];
+
+dataArray.push(['Answers'], ['Under 14'], ['15-17'], ['18-21'], ['22-29'], ['30-39'], ['40-49'], ['Over 50']);
+
     // Populate chart with answers and their corresponding frequencies
     $.each(dataObject.answers, function(key, value) {
         dataArray[0].push(value.answer);
@@ -133,22 +153,12 @@ function buildAgeChart(data) {
 function buildMusicalCircles(data) {
     var canvas = document.getElementById("music");
     stage = new createjs.Stage("music");
+    var currentSound = null ;
+    var currentSounds = [];
     
-    var carnival = createjs.Sound.play("carnival", {loop: -1, volume: 0});
-    var fx1 = createjs.Sound.play("fx-1", {loop: -1, volume: 0});
+    // stores circle shape, sound, and frequency 
+    var circleArray = [];
     
-    var currentFaceContainer = new createjs.Container();
-    stage.addChild(currentFaceContainer);
-    
-    // load face images
-    var imagePath = "assets/img/faces/face";
-    var images = [];
-    for (var i = 0; i < 24; i++) {
-        var image = new Image();
-        image.src = imagePath + (i + 1) + ".png";
-        images[i] = image;
-    }
-
     canvas.width = $("#data").width();
     canvas.height = $("#data").height();
     
@@ -156,7 +166,15 @@ function buildMusicalCircles(data) {
     stage.enableMouseOver(60);
     createjs.Ticker.addEventListener("tick", stage);
     
-    var dataObject = JSON.parse(data);
+
+    if (typeof data != 'object')
+        var dataObject = JSON.parse(data);
+    else
+        var dataObject = data;
+
+
+
+
     var overallFreq = 0;
     $.each(dataObject.answers, function(key, value) {
         overallFreq += value.frequency;
@@ -174,7 +192,9 @@ function buildMusicalCircles(data) {
             clearInterval(drawCircles);
         
         var scaledSize = Math.floor(percentages[i] * 120) + 3;
-        var soundNumber = soundIDs.length - Math.floor(percentages[i] * soundIDs.length) - 1;
+        var soundNumber = soundIDs.length - Math.floor(percentages[i] * soundIDs.length);
+        if (soundNumber >= soundIDs.length)
+            soundNumber = soundIDs.length - 1;
         var sound = soundIDs[soundNumber];
         
         // center each circle by a width that fills the page evenly
@@ -183,7 +203,8 @@ function buildMusicalCircles(data) {
         // place circle in center of canvas
         var y = canvas.height/2;
         var percentage = Math.round(percentages[i] * 100);
-        drawCircle(scaledSize, dataColors[i], sound, x, y, percentage);
+        var tempCircle = drawCircle(scaledSize, dataColors[i], sound, x, y, percentage);
+        circleArray.push([tempCircle, sound, percentage]);
         
         i++;
     }, 250);
@@ -200,93 +221,97 @@ function buildMusicalCircles(data) {
         circle.shadow = new createjs.Shadow("#000000", 5, 5, 5);
         stage.addChild(circle);
         createjs.Tween.get(circle)
-            .to({scaleX: 1.2, scaleY: 1.2}, 100, createjs.Ease.getPowInOut(2))
-            .to({scaleX: 1, scaleY: 1}, 100);
-        createjs.Sound.play(sound, {pan: circle.x/(canvas.width/2) - 1});
+        .to({scaleX: 1.2, scaleY: 1.2}, 100, createjs.Ease.getPowInOut(2))
+        .to({scaleX: 1, scaleY: 1}, 100);
+        
+        currentSounds.push(createjs.Sound.play(sound, {pan: circle.x/(canvas.width/2) - 1}));
         
         // add text indicating percentage of circle
         var scaledFont = size * .4 + 15;
-        var text = new createjs.Text(percentage + '%', scaledFont + "px Times New Roman", color);
+        var text = new createjs.Text('~' + percentage + '%', scaledFont + "px Times New Roman", color);
         text.x = circle.x;
         text.y = circle.y;
         text.regX = text.getBounds().width / 2;
         text.regY = text.getBounds().height / 2;
         text.alpha = 0;
         stage.addChild(text);
-        createjs.Tween.get(text).to({y: circle.y - 150, alpha: 1}, 100);
-        
-        setTimeout(function() {
-           createjs.Tween.get(circle, {loop: true})
-            .to({scaleX: 1.1, scaleY: 1.1}, 500, createjs.Ease.getPowInOut(2))
-            .to({scaleX: 1, scaleY: 1}, 500);     
-        }, 250);
+        createjs.Tween.get(text).to({y: circle.y - circle.radius - 30, alpha: 1}, 100);
         
         circle.on("mousedown", function() {
             circle.shadow = new createjs.Shadow("#000000", 2, 2, 2);
-            fx1.setPosition(0);
-            fx1.volume = 1;
-            fx1.sourceNode.playbackRate.value = (1 / circle.radius) * 5 + .5;
         });
         
         circle.on("pressup", function() {
             circle.shadow = new createjs.Shadow("#000000", 5, 5, 5); 
-            fx1.volume = 0;
         });
         
         // make circle ping and play sound on rollover
         circle.on("rollover", function() {
+            currentSound = createjs.Sound.play(sound, {pan: this.x/(canvas.width/2) - 1});
             createjs.Tween.removeTweens(circle);
             this.scaleX = this.scaleY = this.scale * 1.2;
-            //createjs.Sound.play(sound, {pan: circle.x/(canvas.width/2) - 1});
-            
-            carnival.setPosition(0);
-            carnival.volume = 1;
-            carnival.sourceNode.playbackRate.value = (1 / circle.radius) * 5 + .5;
-            
-            // draw bitmap faces above circle
-            displayFaces(circle.x, circle.y, circle.radius);
         });
 
         // scale circle back to normal size on rollout
         circle.on("rollout", function() {
+            fadeAudio(currentSound, 100, "out");
             this.scaleX = this.scaleY = this.scale;
-            createjs.Tween.get(circle, {loop: true})
-                .to({scaleX: 1.1, scaleY: 1.1}, 500, createjs.Ease.getPowInOut(2))
-                .to({scaleX: 1, scaleY: 1}, 500);  
-            carnival.volume = 0;
-            removeFaces(circle.radius);
         });
         
-        function displayFaces(centerX, centerY, r) {
-            for (var i = 0; i < r/4; i++) {
-                var randImage = images[Math.floor(Math.random() * 24)];
-                var bitmap = new createjs.Bitmap(randImage);
-                var xOffset = Math.random() * 80 - 40;
-                var yOffset = Math.random() * 30 - 15;
-                bitmap.regX = bitmap.image.width / 2;
-                bitmap.regY = bitmap.image.height / 2;
-                bitmap.x = centerX;
-                bitmap.y = centerY;
-                bitmap.scaleX = bitmap.scaleY = 0.05;
-                bitmap.alpha = 0;
-                bitmap.shadow = new createjs.Shadow("#000000", 2, 2, 2);
-                createjs.Tween.get(bitmap).to({y: centerY - r - 40 + yOffset, x: centerX + xOffset, alpha: 1}, 250);
-                createjs.Tween.get(bitmap, {loop: true}).to({rotation: 30}, 250).to({rotation: -30}, 250);
-                currentFaceContainer.addChild(bitmap);
-            }
-        }
-        
-        function removeFaces(r) {
-            for (var i = 0; i < currentFaceContainer.children.length; i++) {
-                var currentFace = currentFaceContainer.children[i];
-                createjs.Tween.get(currentFace).to({y: currentFace.y + r + 40, alpha: 0}, 150);
-            }
-            
-            setTimeout( function() {
-                currentFaceContainer.removeAllChildren();
-            }, 50);
-        }
+        return circle;
     }
+    
+    var rhythmTimeout = setTimeout(startRhythm, 1000);
+    activeTimeouts.push(rhythmTimeout);
+    
+    function startRhythm() {
+        for (var i = 0; i < currentSounds.length; i++) {
+            fadeAudio(currentSounds[i], 350, "out");
+        }
+
+        var rhythm = setInterval( function() {
+            for (var i = 0; i < circleArray.length; i++) {
+                var random = Math.random() * 100;
+
+                if (circleArray[i][2] >= random) {
+                    fadeAudio(createjs.Sound.play(circleArray[i][1]), 250, "out");
+                    createjs.Tween.get(circleArray[i][0])
+                    .to({scaleX: 1.1, scaleY: 1.1}, 100, createjs.Ease.getPowInOut(2))
+                    .to({scaleX: 1, scaleY: 1}, 100);
+                }
+            }
+        }, 250);
+        
+        activeIntervals.push(rhythm);
+    }
+}
+
+/* ------------------------------------------------------------------------------------------*/
+// Special Function for fading audio in and out
+/* ------------------------------------------------------------------------------------------*/
+function fadeAudio(sound, time, inOrOut) {
+    var fadeOutIncrement = 1/(time/(sound.volume * 5));
+    var fadeInIncrement = 1/(time/5);
+    if (inOrOut == "out") {
+        var fade = setInterval( function() {
+            if (sound.volume <= 0) {
+                sound.volume = 0;
+                clearInterval(fade);
+            }
+            else sound.volume -= fadeOutIncrement;
+        }, 5);
+    }
+    else if(inOrOut == "in") {
+        var fade = setInterval( function() {
+            if (sound.volume >= 1) {
+                sound.volume = 1;
+                clearInterval(fade);
+            }
+            else {
+                sound.volume += fadeInIncrement;
+            }
+        }, 5);   
+    }   
 }
 
 
@@ -299,9 +324,9 @@ window.onresize = resize;
 // setup function for resizing all charts 
 function resize() {
     if ($('#freqView').hasClass('selected'))
-        buildPieChart(sampleJSON1, 'freqData');
+        buildPieChart(sampleJSON, 'freqData');
     if ($('#ageView').hasClass('selected'))
-        buildAgeChart(sampleJSON1);
+        buildAgeChart(sampleJSON);
     if ($('#genderView').hasClass('selected'))
-        buildGenderChart(sampleJSON1);
+        buildGenderChart(sampleJSON);
 }
