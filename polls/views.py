@@ -89,7 +89,7 @@ def flag_question(request):
         question = Question.objects.get(pk=question_pk)
         if not question.flags.filter(pk=user.pk).exists():
             # don't need to check, as flags will remain the same if already exists
-            question.flags.add(user)
+            #question.flags.add(user)
             data = {'success': 'question flagged; question now has {0} flags'.format(question.flags.count())}
         else:
             data = {'error': 'question has already been flagged by this user'}
@@ -340,10 +340,10 @@ def save_answers(request):
                     #return HttpResponse(json.dumps({"answer": answer.text}))
                     # all is well, add to database
                     if user.answer_set.filter(question=answer.question).count()==0:
-                        #and AnswerInfo.objects.filter(user=user,answer=answer).count() == 0:
-                        answer.users.add(user)
+                        pass
+                        #answer.users.add(user)
                         # NEED TO INCLUDE TIMESTAMP FROM AJAX, index 2, to fix
-                        AnswerInfo(answer=answer,user=user).save() # time set to now by default
+                        #AnswerInfo(answer=answer,user=user).save() # time set to now by default
                     else:
                         errors[answer_pk] = "question is already in our database"
 
