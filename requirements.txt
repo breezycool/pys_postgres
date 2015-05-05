@@ -2,6 +2,7 @@ dj-database-url==0.3.0
 Django==1.7.7
 django-postgrespool==0.3.0
 django-toolbelt==0.0.1
+geopy==1.10.0
 gunicorn==19.3.0
 httplib2==0.9
 psycopg2==2.6

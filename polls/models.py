@@ -11,7 +11,7 @@ class User(models.Model):
     lat = models.FloatField(null=True)
     lon = models.FloatField(null=True)
     # non-significant fields
-    email = models.EmailField(null=True)
+    email = models.EmailField(max_length=100, null=True)
     name = models.CharField(max_length=100, null=True)
     def __unicode__(self):
         return self.name

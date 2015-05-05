@@ -21,21 +21,7 @@ def f(request):
 def answeredqs(request, qlist):
     return render(request, 'polls/answeredqs.html', {'qlist':qlist})
 
-from math import radians, cos, sin, asin, sqrt
-def haversine(lon1, lat1, lon2, lat2):
-    """
-    Calculate the great circle distance between two points 
-    on the earth (specified in decimal degrees)
-    """
-    # convert decimal degrees to radians 
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-    # haversine formula 
-    dlon = lon2 - lon1 
-    dlat = lat2 - lat1 
-    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-    c = 2 * asin(sqrt(a)) 
-    km = 6367 * c
-    return km
+from geopy.distance import vincenty
 # ---------------------- ajax site views ------------------------------
 
 # function used in ajax views to return the next 50 questions relevant
@@ -65,19 +51,16 @@ def getQuestions(user_pk, ran):
     qs = Question.objects.order_by('-pub_date') # this will be relative to the user's location
 
     # probably very inefficient, can do this better
-    """
-    if ran == 'near':
+    if ran == "near":
         for q in qs:
             # exclude all questions outside five km radius
-            if haversine(lon,lat,q.lon,q.lat) > radius:
+            if vincenty((lon,lat),(q.lon,q.lat)).miles > radius:
                 qs = qs.exclude(pk=q.pk)
-    elif ran == 'far':
+    elif ran == "far":
         for q in qs:
             # exclude all questions inside five mile radius
-            if haversine(lon,lat,q.lon,q.lat) < radius:
+            if vincenty((lon,lat),(q.lon,q.lat)).miles < radius:
                 qs = qs.exclude(pk=q.pk)
-    """
-
     # exclude already answered (or flagged) questions
     for each in user.answer_set.all():
         qs = qs.exclude(pk=each.question.pk) 
@@ -121,7 +104,7 @@ def get_questions(request):
         user_pk = int(request.POST.get('user_pk'))
         ran = request.POST.get('type')
         # get user-relevant questions
-        questions = getQuestions(user_pk, 'far') #hardcoded
+        questions = getQuestions(user_pk, ran) #hardcoded
         #questions = Question.objects.order_by('-pub_date')[:2]
 
         data = {}
@@ -270,6 +253,7 @@ def get_profile(request):
 def save_user(request):
     if request.method == 'POST':
         info = json.loads(request.POST.get('info'))
+        #return HttpResponse(json.dumps(info))
         fb_id = int(info['id'])
         name =  info['name']
         gender = info['gender']
