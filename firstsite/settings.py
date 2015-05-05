@@ -62,7 +62,7 @@ TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django',
+        'NAME': 'pyspys',
         'USER': 'lachlankermode',
         #'PASSWORD': 'Uytre23',
         #'HOST': '127.0.0.1',
