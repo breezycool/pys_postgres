@@ -113,15 +113,49 @@ def get_questions(request):
 
     return HttpResponse(json.dumps(data))
 
-def getAge(user):
-    birth_date = user.birthday
-    days_in_year = 365.2425    
-    return int((date.today() - birth_date).days / days_in_year)
-
 # custom function
 def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+def formatAnswers(answer_set):
+    array = []
+    for a in answer_set:
+        obj = {}
+        obj['answer'] = a.text
+        obj['frequency'] = a.users.count()
+        # find formatted data ---
+        maleCount = 0
+        femaleCount = 0
+        ageArray = [0,0,0,0,0,0,0]
+        for user in a.users.all():
+            if user.gender == 'male':
+                maleCount += 1
+            if user.gender == 'female':
+                femaleCount += 1
+            age = calculate_age(user.birthday)
+            # ['Under 14'], ['15-17'], ['18-21'], ['22-29'], ['30-39'], ['40-49'], ['Over 50'])
+            if age <= 14:
+                ind = 0
+            elif age <= 17:
+                ind = 1
+            elif age <= 21:
+                ind = 2
+            elif age <= 29:
+                ind = 3
+            elif age <= 39:
+                ind = 4
+            elif age <= 49:
+                ind = 5
+            else:
+                ind = 6
+            ageArray[ind] += 1
+        # -----------------------
+        obj['maleFrequency'] = maleCount
+        obj['femaleFrequency'] = femaleCount
+        obj['ageFreqs'] = ageArray
+        array.append(obj)
+    return array
 
 @csrf_exempt
 def get_data(request):
@@ -130,42 +164,7 @@ def get_data(request):
             answer_pk = request.POST.get('answer_pk')
             q = Answer.objects.get(pk=answer_pk).question
 
-            array = []
-            for a in q.answer_set.all():
-                obj = {}
-                obj['answer'] = a.text
-                obj['frequency'] = a.users.count()
-                # find formatted data ---
-                maleCount = 0
-                femaleCount = 0
-                ageArray = [0,0,0,0,0,0,0]
-                for user in a.users.all():
-                    if user.gender == 'male':
-                        maleCount += 1
-                    if user.gender == 'female':
-                        femaleCount += 1
-                    age = calculate_age(user.birthday)
-                    # ['Under 14'], ['15-17'], ['18-21'], ['22-29'], ['30-39'], ['40-49'], ['Over 50'])
-                    if age <= 14:
-                        ind = 0
-                    elif age <= 17:
-                        ind = 1
-                    elif age <= 21:
-                        ind = 2
-                    elif age <= 29:
-                        ind = 3
-                    elif age <= 39:
-                        ind = 4
-                    elif age <= 49:
-                        ind = 5
-                    else:
-                        ind = 6
-                    ageArray[ind] += 1
-                # -----------------------
-                obj['maleFrequency'] = maleCount
-                obj['femaleFrequency'] = femaleCount
-                obj['ageFreqs'] = ageArray
-                array.append(obj)
+            array = formatAnswers(q.answer_set.all())
 
             data = {'answers':array}
         except:
@@ -190,44 +189,7 @@ def get_profile(request):
                 outer_dict = {}
                 outer_dict['qID'] = q.pk
                 outer_dict['question'] = q.question_text
-            #------ answers ----- should update and make a function
-                array = []
-                for a in q.answer_set.all():
-                    obj = {}
-                    obj['answer'] = a.text
-                    obj['frequency'] = a.users.count()
-                    # find formatted data ---
-                    maleCount = 0
-                    femaleCount = 0
-                    ageArray = [0,0,0,0,0,0,0]
-                    for user in a.users.all():
-                        if user.gender == 'male':
-                            maleCount += 1
-                        if user.gender == 'female':
-                            femaleCount += 1
-                        age = calculate_age(user.birthday)
-                        # ['Under 14'], ['15-17'], ['18-21'], ['22-29'], ['30-39'], ['40-49'], ['Over 50'])
-                        if age <= 14:
-                            ind = 0
-                        elif age <= 17:
-                            ind = 1
-                        elif age <= 21:
-                            ind = 2
-                        elif age <= 29:
-                            ind = 3
-                        elif age <= 39:
-                            ind = 4
-                        elif age <= 49:
-                            ind = 5
-                        else:
-                            ind = 6
-                        ageArray[ind] += 1
-                    # -----------------------
-                    obj['maleFrequency'] = maleCount
-                    obj['femaleFrequency'] = femaleCount
-                    obj['ageFreqs'] = ageArray
-                    array.append(obj)
-                outer_dict['answers'] = array
+                outer_dict['answers'] = formatAnswers(q.answer_set.all())
                 outer_array.append(outer_dict)
             #------------------------
             data = outer_array
