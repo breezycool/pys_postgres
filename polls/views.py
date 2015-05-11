@@ -105,6 +105,8 @@ def get_questions(request):
                 n = (answer.pk, answer.text)
                 a.append(n)
             dat['answers'] = a
+            dat['lat'] = q.lat
+            dat['lng'] = q.lon
             data[q.pk] = dat
     else:
         data = {'error': 'this was not a POST request'}
@@ -315,7 +317,9 @@ def save_answers(request):
         # bad variables, could change if i have time
         for pk in answer_pks:
             answer_pk = int(pk[1])
-            time = pk[2]
+            # sent as time since epop
+            poptime = pk[2]
+            nicetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(poptime))
             try:
                 answer = Answer.objects.get(pk=answer_pk)
                 # check user has not already answered this question
@@ -328,8 +332,9 @@ def save_answers(request):
                     # all is well, add to database
                     if user.answer_set.filter(question=answer.question).count()==0:
                         answer.users.add(user)
+                        answertime = datetime.strptime(nicetime, "%Y-%m-%d %H:%M:%S")
                         # NEED TO INCLUDE TIMESTAMP FROM AJAX, index 2, to fix
-                        AnswerInfo(answer=answer,user=user).save() # time set to now by default
+                        AnswerInfo(answer=answer,user=user,time=answertime).save() # time set to now by default
                     else:
                         errors[answer_pk] = "question is already in our database"
 
