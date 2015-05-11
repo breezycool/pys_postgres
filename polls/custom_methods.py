@@ -132,7 +132,9 @@ def getQuestions(user_pk, ran):
         for answer in q.answer_set.all():
             usercount += answer.users.count()
 
-        if q.flags.count() <= usercount/7: # if more than 1/7th of users have flagged, don't show to anyone
+        if q.flags.count() > 5 and q.flags.count() >= usercount/7: # if more than 1/7th of users have flagged, don't show to anyone
+            pass
+        else:
             questions.append(q)
             count+=1
         # specifies number of unanswered questions to return
