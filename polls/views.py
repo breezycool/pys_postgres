@@ -223,20 +223,22 @@ def save_user(request):
     return HttpResponse(json.dumps(data))
 
 # ---------------------------------------------------------------------
+"""
+save_question receives question_text, user_pk and a JSON array of 
+answers from Javascript. If a question of the exact same wording is not
+already in the database, then the question is saved to the database 
+and a success message is returned.
+"""
 def save_question(request):
     if request.method == 'POST':
         question_text = request.POST.get('question_text')
         answers = json.loads(request.POST.get('answers'))
         user_pk = request.POST.get('user_pk')
-        # lat = float(json.loads(request.POST.get('lat')))
-        # lon = float(json.loads(request.POST.get('lon')))
 
         # checks for equivalence of text; could also do answers.
         if Question.objects.filter(question_text=question_text).count() > 0:
             return HttpResponse(json.dumps({'error': 'this question is already in our database'}))
-        # -------------------------------------
-        # perform some field checking, e.g. the question can't already exist (or can it?)
-        # -------------------------------------
+
         # save the question to the database (checking of fields done on front end)
         try:
             user = User.objects.get(pk=user_pk)
@@ -245,7 +247,6 @@ def save_question(request):
             for answer in answers:
                 a = Answer(question=q, text=answer)
                 a.save()
-            #data = {'success': 'your question was saved to the database'}
             data = {'success': 'this question was saved at {0},{1} to {2}'.format(user.lat, user.lon, user.name)}
         except:
             data = {'error': 'your question couldn\'t be saved to the database'}

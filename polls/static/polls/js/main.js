@@ -1,8 +1,12 @@
 $(function() {
+
     // prevent default actions on submission of any form
     $('form').submit(function(e) {
         e.preventDefault();
     });
+
+
+    scroller = 0;
 
     alreadyAnswered = false; // did the user already answer the curr question?
     currQType = 'near'; // are we looking for near or far questions?
@@ -23,20 +27,6 @@ $(function() {
     subQuery = 'recent';
     recentSort = 'desc';
     popularSort = 'desc';
-
-    // for testing locally
-    /*
-        JSONqs = '{"17": {"question": "does our girl Amy like this app?", "answers": [[51, "100%"], [53, "I BE SAYIN HOLLA YEEESSSS"], [54, "it is so breezy, what a great job they have done"], [52, "wow. wow. wow."]]}, "17": {"question": "which of these answers takes your fancy?", "answers": [[59, "this answer"], [57, "this answer"], [58, "this answer"], [56, "this answer"], [55, "this answer"]]}, "18": {"question": "how many numbers are there?", "answers": [[60, "1"], [61, "2"], [62, "3"], [63, "more than 3"]]}, "19": {"question": "how many kids did you kill today?", "answers": [[64, "4"], [65, "less than 4"]]}, "15": {"question": "will you get down with me?", "answers": [[47, "bae, you know it"], [48, "heyellllllll yaaaaaaa"], [49, "mmmmkaeeee"], [50, "try again"]]}}';
-        currentQuestions = JSON.parse(JSONqs);
-        currentQuestions = formatJSON(currentQuestions);
-        currentQuestions = loadQuestion(currentQuestions);
-        */
-
-
-
-    //getQuestions(userID, currQType);
-
-    //answeredQuestions = []; // will hold questions user answered
 
     // Load all sound assets with PreloadJS
     sounds = new createjs.LoadQueue();
@@ -89,6 +79,21 @@ soundIDs = ["C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4", "F4", "G
 
 
 
+
+$('#myQs').scroll(function() {
+    var el = $('#myQs')[0];
+    console.log('scroll. ajax ready is ' + ajaxReady + ' and qloadcomp is ' + QloadComplete);
+    if (!ajaxReady || QloadComplete) return;
+    if (el.scrollTop > (el.scrollHeight - el.offsetHeight - 100)) {
+            /*if (scrollNewDone || scrollTopDone) {
+                return;
+            }*/
+            scroller++;
+            loadQFromQuery(userID, mainQuery, subQuery, recentSort, popularSort, scroller);
+            console.log('were at the bottom');
+            ajaxReady = false;
+        }
+    });
 });
 var currentView = 'freqData'; // tracks current data display for toggling on and off when new data is selected
 
@@ -104,6 +109,9 @@ $(window).keydown(function(event) {
         return false;
     }
 });
+
+
+
 
 // AJAX SETUP FOR DJANGO SERVER
 function getCookie(name) {
@@ -326,12 +334,12 @@ $(document).on('click', '#locToggle > div', function() {
             mainQuery = 'asked';
             $('#asked').addClass('selected');
             $('#answered').removeClass('selected');
-            loadQFromQuery(userID, mainQuery, subQuery, recentSort, popularSort, 1);
+            loadQFromQuery(userID, mainQuery, subQuery, recentSort, popularSort, 0);
         } else {
             mainQuery = 'answered';
             $('#answered').addClass('selected');
             $('#asked').removeClass('selected');
-            loadQFromQuery(userID, mainQuery, subQuery, recentSort, popularSort, 1);
+            loadQFromQuery(userID, mainQuery, subQuery, recentSort, popularSort, 0);
         }
     }
 });
@@ -819,74 +827,20 @@ function getU(userObj) {
     });
 }
 
-// get all questions, answers, and data associated with me
-/*
-function getMyQs() {
-    $.ajax({
-        url: 'getprofile/',
-        type: 'POST',
-        data: {
-            csrfmiddlewaretoken: csrftoken,
-            user_pk: userID
-        },
-        beforeSend: function() {},
-        success: function(data) {
-            $('#qLoader').hide();
-            $('#myQs > ul').html('');
-            console.log('success?');
-            console.log(JSON.parse(data));
-            myQsJSON = JSON.parse(data);
-            for (var i = 0; i < myQsJSON.length; i++) {
-                $('#myQs > ul').append('<li data-qid="' + myQsJSON[i].qID + '">' + myQsJSON[i].question + '</li>');
-            }
-            // preview pie chart on mouseover
-            $('#myQs > ul > li').on('mouseover', function() {
-                // reset
-                $('#myQs > ul > li').css('border', 'none');
-                $('#myQs > ul > li').css('zoom', '1');
 
-                // focusing on element
-                $(this).css('border', 'solid #7D26CD 1px');
-                $(this).css('zoom','1.5');
-
-                $('#piePreview').html('');
-                console.log('moused over');
-                var currQID = $(this).data('qid');
-                console.log(myQsJSON);
-                // find correct question/poll for which to display data
-                for (var i = 0; i < myQsJSON.length; i++) {
-                    if (myQsJSON[i].qID == currQID) {
-                        sampleJSON = myQsJSON[i];
-                        console.log(sampleJSON)
-
-                        // see if 0 users have answered
-                        var totalFreq = 0;
-                        for (var i = 0; i < sampleJSON.answers.length; i++) {
-                            totalFreq += sampleJSON.answers[i].frequency;
-                        }
-                        if (totalFreq == 0) {
-                            $('#piePreview').html('no data for this poll yet!');
-                            break;
-                        }
-
-                        buildPieChart(sampleJSON, 'piePreview');
-                        break;
-                    }
-                }
-            });
-        },
-        error: function(e) {
-            console.log('error?')
-            console.log(e);
-        }
-    });
-}
-*/
-
-
+// get all questions associated with my user, based on certain queries
 function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection, scrollIndex) {
-    console.log('user is ' + userID + ' main query is ' + mainQuery + ' sub query is ' + subQuery + ' recDirection is ' + recDirection + ' popDirection is ' + popDirection + ' scrollIndex is ' + userID);
-    $('#qLoader').show();
+    // allow for infinite ajax scroll if we have 
+    if (scrollIndex == 0) {
+        ajaxReady = true;
+        QloadComplete = false;
+        scroller = 0;
+        $('#qLoader').show();
+    }
+    else {
+        ajaxReady = false;
+        $('#qLoader2').show();
+    }
     $.ajax({
         url: 'getprofile/',
         type: 'POST',
@@ -901,49 +855,33 @@ function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection,
         },
         beforeSend: function() {},
         success: function(data) {
-            $('#qLoader').hide();
-            $('#qLoader2').hide();
             if (scrollIndex == 0) {
+                $('#qLoader').hide();
                 $('#myQs > ul').html('');
                 $('#myQs').animate({
                     scrollTop: 0
                 }, 500);
                 $('#qLoader2').remove();
+            } 
+            else {
+                $('#qLoader2').hide();
+                ajaxReady = true;
             }
             console.log('success?');
             console.log(JSON.parse(data));
             myQsJSON = JSON.parse(data);
+            if (myQsJSON.length < 30)
+                QloadComplete = true;
+
+            else
+                QloadComplete = false;
+
             for (var i = 0; i < myQsJSON.length; i++) {
                 $('#myQs > ul').append('<li data-qid="' + myQsJSON[i].qID + '">' + myQsJSON[i].question + '</li>');
             }
-            if (scrollIndex != 0)
-            {
-                $('#myQs').append('<div id="qLoader2">\
-                    <svg width="70" height="20">\
-                    <rect width="20" height="20" x="0" y="0" rx="3" ry="3" style="fill:#7D26CD">\
-                    <animate attributeName="width" values="0;20;20;20;0" dur="1000ms" repeatCount="indefinite" />\
-                    <animate attributeName="height" values="0;20;20;20;0" dur="1000ms" repeatCount="indefinite" />\
-                    <animate attributeName="x" values="10;0;0;0;10" dur="1000ms" repeatCount="indefinite" />\
-                    <animate attributeName="y" values="10;0;0;0;10" dur="1000ms" repeatCount="indefinite" />\
-                    </rect>\
-                    <rect width="20" height="20" x="25" y="0" rx="3" ry="3" style="fill:#7D26CD">\
-                    <animate attributeName="width" values="0;20;20;20;0" begin="200ms" dur="1000ms" repeatCount="indefinite" />\
-                    <animate attributeName="height" values="0;20;20;20;0" begin="200ms" dur="1000ms" repeatCount="indefinite" />\
-                    <animate attributeName="x" values="35;25;25;25;35" begin="200ms" dur="1000ms" repeatCount="indefinite" />\
-                    <animate attributeName="y" values="10;0;0;0;10" begin="200ms" dur="1000ms" repeatCount="indefinite" />\
-                    </rect>\
-                    <rect width="20" height="20" x="50" y="0" rx="3" ry="3" style="fill:#7D26CD">\
-                    <animate attributeName="width" values="0;20;20;20;0" begin="400ms" dur="1000ms" repeatCount="indefinite" />\
-                    <animate attributeName="height" values="0;20;20;20;0" begin="400ms" dur="1000ms" repeatCount="indefinite" />\
-                    <animate attributeName="x" values="60;50;50;50;60" begin="400ms" dur="1000ms" repeatCount="indefinite" />\
-                    <animate attributeName="y" values="10;0;0;0;10" begin="400ms" dur="1000ms" repeatCount="indefinite" />\
-                    </rect>\
-                    </svg>\
-                    </div>');
 
-            $()
-        
-}
+            $('#qLoader2').appendTo('#myQs');
+
             // preview pie chart on mouseover
             $('#myQs > ul > li').on('mouseover', function() {
                 // reset
@@ -955,7 +893,6 @@ function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection,
                 $(this).css('zoom', '1.5');
 
                 $('#piePreview').html('');
-                console.log('moused over');
                 var currQID = $(this).data('qid');
                 console.log(myQsJSON);
                 // find correct question/poll for which to display data
