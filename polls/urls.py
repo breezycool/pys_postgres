@@ -5,8 +5,8 @@ from django.contrib.auth.views import login, logout
 urlpatterns = patterns('',
     # ----------------- page views ---------------------
     url(r'^index/$|^$', views.index, name='index'),
-    url(r'^answered/$', views.answeredqs, name='answered'),
-    url(r'^f/$', views.f, name='f'),
+    #url(r'^answered/$', views.answeredqs, name='answered'),
+    #url(r'^f/$', views.f, name='f'),
     # ------------------ ajax views ------------------------
     url(r'^getq/$', views.get_questions, name='get_questions'),
     url(r'^flagq/$', views.flag_question, name='flag_question'),
