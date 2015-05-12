@@ -209,12 +209,12 @@ def save_user(request):
             else:
                 try:
                     user = User.objects.get(fb_id=fb_id)
-                    user.lon = lon
-                    user.lat = lat
-                    user.save()
+                    #user.lon = lon
+                    #user.lat = lat
+                    #user.save()
                     data = {'success': 'user info retrieved', 'user_pk': user.pk}
                 except:
-                    {'error': 'we have more than one representation of this user in the database'}
+                    data = {'error': 'we have more than one representation of this user in the database'}
         except:
             data = {'error': 'user couldn\'t be saved (something is probably wrong with fb info sent)'}
     else:
