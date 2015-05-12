@@ -1,5 +1,9 @@
 """
-contains methods that are used in views.py for asynchronous AJAX views.
+Name: custom_methods.py
+Author: PYS team
+Contents:
+methods that are used in views.py for asynchronous AJAX views. 
+Info:
 These methods are defined in this file so as not to put methods that
 represent a view and those that do not all in views.py.
 """
@@ -7,6 +11,7 @@ represent a view and those that do not all in views.py.
 from polls.models import *
 from datetime import *
 from geopy.distance import vincenty
+from random import shuffle
 
 # calculate age from a datetime object, born, specifying when user was born
 def calculate_age(born):
@@ -118,7 +123,7 @@ def sortByRecent(questions, rec_dir):
 # to user, returned in sets of 'returncount'.
 def getQuestions(user_pk, ran):
     questions = []
-    returncount = 10
+    returncount = 30
     try:
         user = User.objects.get(pk=user_pk)
     except:
@@ -155,7 +160,7 @@ def getQuestions(user_pk, ran):
         if (q.flags.count() >= 5) and (q.flags.count() >= usercount/7):
             qs.exclude(pk=q.pk)
 
-    qs = sortByRecent(qs, 'desc') #custom method
+    shuffle(list(qs)) # randomize presentation of qs
     qs = qs[0:returncount]
 
     return qs

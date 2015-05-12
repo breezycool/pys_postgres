@@ -1,3 +1,13 @@
+/* ------------------------------------------------------------------------------------------*/
+// Name: ball-pit.js
+// Author: PYS team
+// Contents: Defines physics engine data representation for ball pit 
+// Info: This file uses PhysicsJS to build a ball pit in which the radius of 
+// each ball is scaled to the frequency of responses for each answer.
+// The higher the percentage, the larger the ball. 
+// Much of this code was adapted from an example on PhysicsJS documentation: 
+// http://wellcaffeinated.net/PhysicsJS/
+/* ------------------------------------------------------------------------------------------*/
 var globalWorld; // defines a variable for dealing with the physics world globally
 var globalPhysics;
 var renderer;
@@ -23,7 +33,6 @@ var worldConfig = {
 
 /* ------------------------------------------------------------------------------------------*/
 // Draws a ballpit using a javascript physics engine
-// Code taken from example on PhysicsJS documentation: http://wellcaffeinated.net/PhysicsJS/
 /* ------------------------------------------------------------------------------------------*/
 require.config({
     baseUrl: 'http://wellcaffeinated.net/PhysicsJS/assets/scripts/vendor/',
@@ -33,15 +42,6 @@ require.config({
         main: 'physicsjs-full.min'
     }]
 });
-
-var colors = [
-    ['0xF68E55', '0x0d394f'],
-    ['0x3BB878', '0x561414'],
-    ['0x00BFF3', '0x79231b'],
-    ['0x6c71c4', '0x393f6a'],
-    ['0x58c73c', '0x30641c'],
-    ['0xcac34c', '0x736a2c']
-];
 
 function initWorld(world, Physics) {
     globalPhysics = Physics;
@@ -99,9 +99,9 @@ function startWorld(world, Physics) {
     });
 }
 
-//
+/* ------------------------------------------------------------------------------------------*/
 // Add some interaction
-//
+/* ------------------------------------------------------------------------------------------*/
 function addInteraction(world, Physics) {
     // add the mouse interaction
     world.add(Physics.behavior('interactive', {
@@ -134,9 +134,9 @@ function makeBody(obj) {
     return this.body(obj.name, obj);
 }
 
-//
+/* ------------------------------------------------------------------------------------------*/
 // Add bodies to the world
-//
+/* ------------------------------------------------------------------------------------------*/
 function addBodies(world, Physics, data) {
     // as of 0.7.0 the renderer will auto resize... so we just take the values from the renderer
     ballsBounds = Physics.aabb(0, 0, renderer.width, renderer.height);
@@ -168,7 +168,7 @@ function addBodies(world, Physics, data) {
 
     for (var j = 0; j < numAnswers; j++) {
         // draw circles for first answer
-        var numCircles = Math.floor(dataArray[j] / overallFreq * 100);
+        var numCircles = Math.floor(dataArray[j] / overallFreq * 50);
         var radius = Math.floor(80 * dataArray[j] / overallFreq);
         if (radius > 50)
             numCircles = 10;
@@ -194,21 +194,20 @@ function addBodies(world, Physics, data) {
     world.add(bodies.map(makeBody.bind(Physics)));
 }
 
-//
+/* ------------------------------------------------------------------------------------------*/
 // Load the libraries with requirejs and create the simulation
-//
+/* ------------------------------------------------------------------------------------------*/
 require([
     'physicsjs',
     'pixi'
 ], function(Physics, PIXI) {
     globalPIXI = PIXI;
     globalPHYSICS = Physics;
-
-
 });
 
-
-
+/* ------------------------------------------------------------------------------------------*/
+// This does not destroy the physics engine. It simply pauses it and removes all the bodies.
+/* ------------------------------------------------------------------------------------------*/
 function clearWorld() {
     globalWorld.pause();
     globalWorld.remove(globalWorld.getBodies());

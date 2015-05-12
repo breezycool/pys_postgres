@@ -1,4 +1,13 @@
-#from django.db import models
+"""
+Name: models.py
+Author: PYS team
+Contents:
+the models through which Django interacts with the database (in this
+case, PostgreSQL) 
+Info:
+See documentation for structural diagram depicting connections between
+models.
+"""
 from django.db import models
 from django.utils import timezone
 

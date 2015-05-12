@@ -1,5 +1,11 @@
 """
+Name: admin.py
+Author: PYS team
+Contents:
 Django settings for polledyouso project.
+Info:
+This file must be reconfigured to your local settings, as well as all 
+those requirements in requirements.txt installed to run the site locally. 
 """
 
 import os
@@ -74,6 +80,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "polls"),    
 )
 
+# ------ Heroku configuration (comment out to run locally) ----------
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
 DATABASES['default'] =  dj_database_url.config()

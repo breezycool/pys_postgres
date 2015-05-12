@@ -1,40 +1,25 @@
-// This is called with the results from from FB.getLoginStatus().
+/* ------------------------------------------------------------------------------------------*/
+// Name: facebook.js
+// Author: PYS team
+// Contents: Implements PolledYouSo's login system using Facebook.
+// Info: Allows app to check if user is logged in, and reacts to this
+// by creating a user or signing him/her in.
+/* ------------------------------------------------------------------------------------------*/
+// Deals with change in user's login status, given response from FB.
 function statusChangeCallback(response) {
-    console.log('statusChangeCallback');
-    console.log(response);
-    // The response object is returned with a status field that lets the
-    // app know the current login status of the person.
-    // Full docs on the response object can be found in the documentation
-    // for FB.getLoginStatus().
     $('#loginLoader').hide();
-    $('#login').css('background','#7D26CD');
+    $('#login').css('background', '#7D26CD');
     $('#mainName').show();
+    // See if user is connected
     if (response.status === 'connected') {
-        // Logged into your app and Facebook.
-
         $('#login').hide();
-
-        //show_logout();
-        //create_usr();
-        testAPI();
-    } else if (response.status === 'not_authorized') {
-
-        // The person is logged into Facebook, but not your app.
-    } else {
-        // The person is not logged into Facebook, so we're not sure if
-        // they are logged into this app or not.
+        usrConnected();
     }
+    // logged into FB, but app not authorized
+    else if (response.status === 'not_authorized') {} else {}
 }
 
-// This function is called when someone finishes with the Login
-// Button.  See the onlogin handler attached to it in the sample
-// code below.
-function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-        statusChangeCallback(response);
-    });
-}
-
+// Initializes facebook API
 window.fbAsyncInit = function() {
     FB.init({
         appId: '410388515807590',
@@ -44,32 +29,22 @@ window.fbAsyncInit = function() {
         version: 'v2.2' // use version 2.2
     });
 
-    // Now that we've initialized the JavaScript SDK, we call 
-    // FB.getLoginStatus().  This function gets the state of the
-    // person visiting this page and can return one of three states to
-    // the callback you provide.  They can be:
-    //
-    // 1. Logged into your app ('connected')
-    // 2. Logged into Facebook, but not your app ('not_authorized')
-    // 3. Not logged into Facebook and can't tell if they are logged into
-    //    your app or not.
-    //
-    // These three cases are handled in the callback function.
+    // immediately check login status of user
     FB.getLoginStatus(function(response) {
         // statusChangeCallback(response);
         $('#loginLoader').hide();
-        $('#login').css('background','#7D26CD');
+        $('#login').css('background', '#7D26CD');
         $('#mainName').show();
-        console.log(response.status);
         if (response.status != 'connected') {
             $('#overlay').show();
             $('#login').show();
             return;
         }
-        testAPI();
+        usrConnected();
     });
 };
 
+// log into PolledYouSo through facebook
 function facebookLogin() {
     FB.login(function(response) {
         // response from login
@@ -78,17 +53,18 @@ function facebookLogin() {
         });
 
     }, {
+        // extended permissions
         scope: 'user_about_me,user_birthday,user_location',
         return_scopes: true,
     });
 }
 
-$(document).on('click','#logout', function() {
-  FB.logout(function(response) {
-    console.log(response);
-    locationSet = false;
-    $('#overlay,#login').slideDown(500);
-})
+// logout of FB when user clicks logout button
+$(document).on('click', '#logout', function() {
+    FB.logout(function(response) {
+        locationSet = false;
+        $('#overlay,#login').slideDown(500);
+    })
 });
 
 // Load the SDK asynchronously
@@ -101,15 +77,18 @@ $(document).on('click','#logout', function() {
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-// Here we run a very simple test of the Graph API after login is
-// successful.  See statusChangeCallback() for when this call is made.
-function testAPI() {
+// User has connected to PolledYouSo with FB. Create user/sign user in.
+function usrConnected() {
     $('#login').hide();
-    console.log('Welcome!  Fetching your information.... ');
     FB.api('/me', function(response) {
-        // console.log(JSON.stringify(response));
         // global user obj
-        fullUserObj = { id: response.id, name: response.name, gender: response.gender, birthday: response.birthday, email: response.email };
+        fullUserObj = {
+            id: response.id,
+            name: response.name,
+            gender: response.gender,
+            birthday: response.birthday,
+            email: response.email
+        };
         myAge = bdayToAge(fullUserObj.birthday);
         myGender = fullUserObj.gender;
 
@@ -120,7 +99,29 @@ function testAPI() {
             $('#myName').text(fullUserObj.name.split(' ')[0]);
 
         });
-       // $('#login').hide();
-       getLocation();
-   });
+        getLocation();
+    });
+}
+
+// Save user (create or update) with details defined in userObj.
+function saveU(userObj) {
+    loadComplete = true;
+    $.ajax({
+        url: 'saveu/',
+        type: 'POST',
+        data: {
+            csrfmiddlewaretoken: csrftoken,
+            info: JSON.stringify(fullUserObj)
+        },
+        beforeSend: function() {},
+        success: function(data) {
+            data = JSON.parse(data);
+            userID = data['user_pk'];
+            getQuestions(userID, currQType);
+            answeredQuestions = [];
+        },
+        error: function(e) {
+            console.log(e);
+        }
+    });
 }

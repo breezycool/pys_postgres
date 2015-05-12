@@ -1,4 +1,72 @@
 /* ------------------------------------------------------------------------------------------*/
+// Name: data.js
+// Author: PYS team
+// Contents: Defines all functions for drawing data representations  
+// Info: There are five data views. The first three are built using Google Charts API.
+// This is include the pie chart, gender chart, and age chart. The fourth data representation
+// is not included in this file and is coded in ballpit.js. 
+// The fifth representation displays the data musically. Read each function for details.
+/* ------------------------------------------------------------------------------------------*/
+// On document load
+$(function() {
+    // Load all sound assets with PreloadJS
+    sounds = new createjs.LoadQueue();
+    sounds.installPlugin(createjs.Sound);
+    sounds.loadManifest([{
+        id: "jingle",
+        src: "https://s3.amazonaws.com/polledyouso/audio/pys-jingle.mp3"
+    }, {
+        id: "C3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+C3.mp3"
+    }, {
+        id: "D3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+D3.mp3"
+    }, {
+        id: "E3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+E3.mp3"
+    }, {
+        id: "F3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+F3.mp3"
+    }, {
+        id: "G3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+G3.mp3"
+    }, {
+        id: "A3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+A3.mp3"
+    }, {
+        id: "B3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+B3.mp3"
+    }, {
+        id: "C4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+C4.mp3"
+    }, {
+        id: "D4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+D4.mp3"
+    }, {
+        id: "E4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+E4.mp3"
+    }, {
+        id: "F4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+F4.mp3"
+    }, {
+        id: "G4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+G4.mp3"
+    }, {
+        id: "A4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+A4.mp3"
+    }, {
+        id: "B4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+B4.mp3"
+    }]);
+
+    soundIDs = ["C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4", "F4", "G4", "A4", "B4"];
+
+    // hide using jquery instead of css for convenience, because
+    // we need this as a table display later
+    $('#dataViews').hide();
+});
+
+/* ------------------------------------------------------------------------------------------*/
 // Global Variables
 /* ------------------------------------------------------------------------------------------*/
 // Defines default colors for charts
@@ -12,26 +80,8 @@ var soundIDs;
 var activeIntervals = [];
 var activeTimeouts = [];
 
-// for testing only
-
-var sampleJSON1 = '{ "answers" : [' +
-'{ "answer":"casey" , "frequency": 34 , "maleFrequency": 10, "femaleFrequency": 24, "ageFreqs": [10, 2, 3, 1, 5, 0, 9, 4]},' +
-'{ "answer":"lachie" , "frequency": 65 , "maleFrequency": 16, "femaleFrequency": 49, "ageFreqs": [8, 10, 8, 3, 7, 12, 5, 11]},' +
-'{ "answer":"jesse" , "frequency": 30 , "maleFrequency": 29, "femaleFrequency": 1, "ageFreqs": [3, 2, 6, 1, 8, 5, 2, 3]},' +
-'{ "answer":"terrence" , "frequency": 25 , "maleFrequency": 12, "femaleFrequency": 13, "ageFreqs": [1, 1, 2, 4, 5, 7, 1, 4]},' +
-'{ "answer":"definitely casey" , "frequency": 14 , "maleFrequency": 10, "femaleFrequency": 4, "ageFreqs": [3, 0, 2, 1, 3, 2, 2, 0]}]}';
-
-// for testing only
-
-var sampleJSON2 = '{ "answers" : [' +
-'{ "answer":"tenderly" , "frequency": 20 , "maleFrequency": 3, "femaleFrequency": 6, "ageFreqs": [5, 2, 3, 1, 5, 0, 9, 10]},' +
-'{ "answer":"anxiously" , "frequency": 50 , "maleFrequency": 6, "femaleFrequency": 19, "ageFreqs": [0, 2, 3, 1, 2, 1, 5, 2]},' +
-'{ "answer":"masturbatorily" , "frequency": 10 , "maleFrequency": 10, "femaleFrequency": 1, "ageFreqs": [3, 2, 3, 1, 8, 5, 2, 3]},' +
-'{ "answer":"discreetly" , "frequency": 15 , "maleFrequency": 2, "femaleFrequency": 7, "ageFreqs": [0, 2, 3, 4, 5, 7, 1, 4]}]}';
-
-var sampleJSON3 = '{ "answers" : [' +
-'{ "answer":"tenderly" , "frequency": 0 , "maleFrequency": 3, "femaleFrequency": 6, "ageFreqs": [5, 2, 3, 1, 5, 0, 9, 10]},' +
-'{ "answer":"anxiously" , "frequency": 50 , "maleFrequency": 6, "femaleFrequency": 19, "ageFreqs": [0, 2, 3, 1, 2, 1, 5, 2]}]}';
+// stores current jingle sound source
+var currentJingle;
 
 // define stage for musical representation
 var stage;
@@ -44,7 +94,7 @@ function buildPieChart(data, elID) {
         var dataObject = JSON.parse(data);
     else
         var dataObject = data;
-    
+
     // Create the data table.
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Answers');
@@ -58,7 +108,7 @@ function buildPieChart(data, elID) {
 
     // Set chart options
     options = {
-        'is3D':true,
+        'is3D': true,
         'colors': dataColors,
         'backgroundColor': "#f7f7f7",
         sliceVisibilityThreshold: 0
@@ -73,28 +123,31 @@ function buildPieChart(data, elID) {
 // Draws a radar chart using male and female frequencies for each answer
 /* ------------------------------------------------------------------------------------------*/
 function buildGenderChart(data) {
+    if (typeof data != 'object')
+        var dataObject = JSON.parse(data);
+    else
+        var dataObject = data;
 
-   if (typeof data != 'object')
-    var dataObject = JSON.parse(data);
-else
-    var dataObject = data;
-
-var dataArray = [['Gender', 'Men', 'Women']];
+    var dataArray = [
+        ['Gender', 'Men', 'Women']
+    ];
 
     // Populate chart with answers and their corresponding frequencies
     $.each(dataObject.answers, function(key, value) {
         dataArray.push([value.answer, value.maleFrequency, value.femaleFrequency]);
     });
-    
+
     var data = google.visualization.arrayToDataTable(dataArray);
 
     var options = {
-        chartArea: {width: '50%'},
+        chartArea: {
+            width: '50%'
+        },
         isStacked: true,
         backgroundColor: "#f7f7f7",
         colors: ["#1269FA", "#F7005E"]
     };
-    
+
     var chart = new google.visualization.BarChart(document.getElementById('genderData'));
     chart.draw(data, options);
 }
@@ -129,14 +182,16 @@ function buildAgeChart(data) {
         dataArray[6].push(value.ageFreqs[5]);
         // Over 50
         dataArray[7].push(value.ageFreqs[6]);
-        
+
     });
-    
+
     var data = google.visualization.arrayToDataTable(dataArray);
-    
+
     var options = {
         backgroundColor: "#f7f7f7",
-        legend: { position: 'none' },
+        legend: {
+            position: 'none'
+        },
         seriesType: "bars",
         colors: dataColors,
     };
@@ -146,71 +201,80 @@ function buildAgeChart(data) {
 }
 
 /* ------------------------------------------------------------------------------------------*/
-// Musical Data Representation
-// Maps overall frequencies to pitch - Lower frequencies correspond to smaller circles and higher pitches
-// Higher frequencies correspond to bigger circles and lower pitches
+// Musical Data Representation - Uses CreateJS suite to handle preloading, tweening, canvas
+// drawing, and sound manipulation.
+// Maps overall frequencies to pitch - Lower frequencies correspond to smaller circles and 
+// higher pitches. Higher frequencies correspond to bigger circles and lower pitches.
 // A metronome is started at 250 bpm - each note is as likely to beat on the metronome as its
 // frequency percentage - For example, a response with 33% will only beat 33% of the time
 // with the metronome.
 /* ------------------------------------------------------------------------------------------*/
 function buildMusicalCircles(data) {
-    var canvas = document.getElementById("music");
-    stage = new createjs.Stage("music");
-    var currentSound = null ;
-    var currentSounds = [];
-    
-    // stores circle shape, sound, and frequency 
-    var circleArray = [];
-    
-    canvas.width = $("#data").width();
-    canvas.height = $("#data").height();
-    
-    createjs.Ticker.setFPS(60);
-    stage.enableMouseOver(60);
-    createjs.Ticker.addEventListener("tick", stage);
-    
-
     if (typeof data != 'object')
         var dataObject = JSON.parse(data);
     else
         var dataObject = data;
 
+    var canvas = document.getElementById("music");
+    stage = new createjs.Stage("music");
+    var currentSound = null;
+    var currentSounds = [];
+
+    // stores circle shape, sound, and frequency 
+    var circleArray = [];
+
+    // force canvas to occupy full width
+    canvas.width = $("#data").width();
+    canvas.height = $("#data").height();
+
+    createjs.Ticker.setFPS(60);
+    stage.enableMouseOver(60);
+    createjs.Ticker.addEventListener("tick", stage);
+
     var overallFreq = 0;
     $.each(dataObject.answers, function(key, value) {
         overallFreq += value.frequency;
     });
-    
+
     var percentages = [];
     $.each(dataObject.answers, function(key, value) {
-        percentages.push(value.frequency/overallFreq);
+        percentages.push(value.frequency / overallFreq);
     });
-    
+
+    // define counter for interval loop
     var i = 0;
+
     // draw a circle for each frequency every 250ms
     var drawCircles = setInterval(function() {
+        // if counter equals the number of answers stop interval
         if (i == percentages.length - 1)
             clearInterval(drawCircles);
-        
+
+        // ball can have a max radius of 93 and a min radius of 3
         var scaledSize = Math.floor(percentages[i] * 90) + 3;
+
+        // calculate which sound should be played according to percentage
+        // a high percentage will have a lower sound
         var soundNumber = soundIDs.length - Math.floor(percentages[i] * soundIDs.length);
         if (soundNumber >= soundIDs.length)
             soundNumber = soundIDs.length - 1;
         var sound = soundIDs[soundNumber];
-        
+
         // center each circle by a width that fills the page evenly
-        var x = Math.floor(i * canvas.width/percentages.length) + canvas.width/percentages.length/2;
-        
+        var x = Math.floor(i * canvas.width / percentages.length) + canvas.width / percentages.length / 2;
+
         // place circle in center of canvas
-        var y = canvas.height/2;
+        var y = canvas.height / 2;
         var percentage = Math.round(percentages[i] * 100);
         var tempCircle = drawCircle(scaledSize, dataColors[i], sound, x, y, percentage);
         circleArray.push([tempCircle, sound, percentage]);
-        
+
+        // increment counter
         i++;
     }, 250);
 
     activeIntervals.push(drawCircles);
-    
+
     // defines process to draw circle and percentage text to canvas
     function drawCircle(size, color, sound, x, y, percentage) {
         var circle = new createjs.Shape();
@@ -222,13 +286,25 @@ function buildMusicalCircles(data) {
         circle.alpha = 1;
         circle.shadow = new createjs.Shadow("#000000", 5, 5, 5);
         stage.addChild(circle);
+
+        // create a scaling tween to show that the ball is making sound
         createjs.Tween.get(circle)
-            .to({scaleX: 1.2, scaleY: 1.2}, 100, createjs.Ease.getPowInOut(2))
-            .to({scaleX: 1, scaleY: 1}, 100);
-        
-        currentSounds.push(createjs.Sound.play(sound, {pan: circle.x/(canvas.width/2) - 1}));
-        
+            .to({
+                scaleX: 1.2,
+                scaleY: 1.2
+            }, 100, createjs.Ease.getPowInOut(2))
+            .to({
+                scaleX: 1,
+                scaleY: 1
+            }, 100);
+
+        // add sound to currentSounds in order to fade it later on
+        currentSounds.push(createjs.Sound.play(sound, {
+            pan: circle.x / (canvas.width / 2) - 1
+        }));
+
         // add text indicating percentage of circle
+        // also, scale text according to frequency
         var scaledFont = size * .4 + 15;
         var text = new createjs.Text('~' + percentage + '%', scaledFont + "px Times New Roman", color);
         text.x = circle.x;
@@ -237,20 +313,27 @@ function buildMusicalCircles(data) {
         text.regY = text.getBounds().height / 2;
         text.alpha = 0;
         stage.addChild(text);
-        createjs.Tween.get(text).to({y: circle.y - circle.radius - 30, alpha: 1}, 100);
-        
+        createjs.Tween.get(text).to({
+            y: circle.y - circle.radius - 30,
+            alpha: 1
+        }, 100);
+
         // give each circle a button pressdown effect
         circle.on("mousedown", function() {
             circle.shadow = new createjs.Shadow("#000000", 2, 2, 2);
         });
-        
+
+        // increase shadow on pressup
         circle.on("pressup", function() {
-            circle.shadow = new createjs.Shadow("#000000", 5, 5, 5); 
+            circle.shadow = new createjs.Shadow("#000000", 5, 5, 5);
         });
-        
+
         // make circle ping and play sound on rollover
         circle.on("rollover", function() {
-            currentSound = createjs.Sound.play(sound, {pan: this.x/(canvas.width/2) - 1});
+            // play sound and pan the sound by an amount equal to the balls placement on the page
+            currentSound = createjs.Sound.play(sound, {
+                pan: this.x / (canvas.width / 2) - 1
+            });
             createjs.Tween.removeTweens(circle);
             this.scaleX = this.scaleY = this.scale * 1.2;
         });
@@ -260,61 +343,74 @@ function buildMusicalCircles(data) {
             fadeAudio(currentSound, 100, "out");
             this.scaleX = this.scaleY = this.scale;
         });
-        
+
         return circle;
     }
-    
+
+    // start metronome once all balls have been displayed
     var rhythmTimeout = setTimeout(startRhythm, 1500);
     activeTimeouts.push(rhythmTimeout);
-    
+
+    // This function starts a metronome that beats every 250 ms
+    // Each ball is as likely to beat as its own response frequency
     function startRhythm() {
+        // fade all previous sounds
         for (var i = 0; i < currentSounds.length; i++) {
             fadeAudio(currentSounds[i], 350, "out");
         }
 
-        var rhythm = setInterval( function() {
+        // start metronome
+        var rhythm = setInterval(function() {
             for (var i = 0; i < circleArray.length; i++) {
                 var random = Math.random() * 100;
 
+                // check if ball should beat according to frequency
                 if (circleArray[i][2] >= random) {
-                    fadeAudio(createjs.Sound.play(circleArray[i][1]), 250, "out");
+                    // immediately fade audio
+                    fadeAudio(createjs.Sound.play(circleArray[i][1], {
+                        pan: circleArray[i][0].x / (canvas.width / 2) - 1
+                    }), 250, "out");
                     createjs.Tween.get(circleArray[i][0])
-                    .to({scaleX: 1.1, scaleY: 1.1}, 100, createjs.Ease.getPowInOut(2))
-                    .to({scaleX: 1, scaleY: 1}, 100);
+                        .to({
+                            scaleX: 1.1,
+                            scaleY: 1.1
+                        }, 100, createjs.Ease.getPowInOut(2))
+                        .to({
+                            scaleX: 1,
+                            scaleY: 1
+                        }, 100);
                 }
             }
         }, 250);
-        
+
         activeIntervals.push(rhythm);
     }
 }
 
 /* ------------------------------------------------------------------------------------------*/
-// Special Function for fading audio in and out
+// Special custom function for fading audio in and out
+// Scales fade out and fade in according to time specified
 /* ------------------------------------------------------------------------------------------*/
 function fadeAudio(sound, time, inOrOut) {
-    var fadeOutIncrement = 1/(time/(sound.volume * 5));
-    var fadeInIncrement = 1/(time/5);
+    var fadeOutIncrement = 1 / (time / (sound.volume * 5));
+    var fadeInIncrement = 1 / (time / 5);
     if (inOrOut == "out") {
-        var fade = setInterval( function() {
+        var fade = setInterval(function() {
             if (sound.volume <= 0) {
                 sound.volume = 0;
                 clearInterval(fade);
-            }
-            else sound.volume -= fadeOutIncrement;
+            } else sound.volume -= fadeOutIncrement;
         }, 5);
-    }
-    else if(inOrOut == "in") {
-        var fade = setInterval( function() {
+    } else if (inOrOut == "in") {
+        var fade = setInterval(function() {
             if (sound.volume >= 1) {
                 sound.volume = 1;
                 clearInterval(fade);
-            }
-            else {
+            } else {
                 sound.volume += fadeInIncrement;
             }
-        }, 5);   
-    }   
+        }, 5);
+    }
 }
 
 /* ------------------------------------------------------------------------------------------*/
@@ -327,7 +423,7 @@ function clearMusic() {
     if (stage != null) {
         stage.removeAllChildren();
         stage.clear();
-    }   
+    }
 
     // clear all timeouts
     if (activeTimeouts != null) {
@@ -347,22 +443,41 @@ function clearMusic() {
 }
 
 /* ------------------------------------------------------------------------------------------*/
+// Play and stop jingle - Randomize playback speed every time
+/* ------------------------------------------------------------------------------------------*/
+function playJingle() {
+    var randomPlayback = Math.random() + .5;
+    currentJingle = createjs.Sound.play("jingle");
+    currentJingle.sourceNode.playbackRate.value = randomPlayback;
+}
+
+function stopJingle() {
+    if (currentJingle != null)
+        fadeAudio(currentJingle, 50, "out");
+}
+
+// setup jingle functionality
+$(document).on('mouseover', '#logo-image', playJingle);
+$(document).on('mouseout', '#logo-image', stopJingle);
+
+
+/* ------------------------------------------------------------------------------------------*/
 // Resize Charts
 /* ------------------------------------------------------------------------------------------*/
 // call resize function on window resize
 window.onresize = resize;
 
-// setup function for resizing all charts 
+// setup function for resizing all charts
+// Note: the physics engine resizes canvas automatically
 function resize() {
     if ($('#freqView').hasClass('selected'))
-        buildPieChart(sampleJSON, 'freqData');
+        buildPieChart(loadedJSON, 'freqData');
     if ($('#ageView').hasClass('selected'))
-        buildAgeChart(sampleJSON);
+        buildAgeChart(loadedJSON);
     if ($('#genderView').hasClass('selected'))
-        buildGenderChart(sampleJSON);
+        buildGenderChart(loadedJSON);
     if ($('#musicView').hasClass('selected')) {
         clearMusic();
-        buildMusicalCircles(sampleJSON);
+        buildMusicalCircles(loadedJSON);
     }
-    // physics engine resizes canvas automatically
 }

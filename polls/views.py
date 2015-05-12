@@ -1,11 +1,16 @@
 """
+Name: views.py
+Author: PYS team
+Contents:
+the different views throgh which the user may interact with the site. 
+Info:
 The site is hosted from a single page view, static_index.html. This
 view contains Javascript code that uses asychronous AJAX requests to 
 communicate with the backend as the user interacts with the the site.
-
 These AJAX views send and receive data as JSON strings. Each AJAX method
 is documented in a function comment before the function itself.
 """
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
@@ -135,7 +140,7 @@ user in the following JSON format ('*'' represents variable data):
 @csrf_exempt
 def get_profile(request):
     # number of questions to return in each AJAX call
-    returncount = 15
+    returncount = 30
 
     if request.method == 'POST':
         try:

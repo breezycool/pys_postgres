@@ -1,3 +1,13 @@
+"""
+Name: admin.py
+Author: PYS team
+Contents:
+specifications for the Django admin site.
+Info:
+accessed at www.polledyouso.com/admin. Users may be added from within
+the admin site by an existing user.
+"""
+
 from django.contrib import admin
 
 # Register your models here.
@@ -11,7 +21,7 @@ class QuestionAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['question_text']}),
         ('Date Information', {'fields': ['pub_date'], 'classes': ['collapse']}),
-        ('Location Information', {'fields': ['location'], 'classes': ['collapse']}),
+        ('Location Information', {'fields': ['lat','lon'], 'classes': ['collapse']}),
     ]
     inlines = [AnswerInline]
     list_filter = ['pub_date'] # filter by location
