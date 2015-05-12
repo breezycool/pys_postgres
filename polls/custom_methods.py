@@ -98,11 +98,11 @@ def sortBy(array, primary, rec_dir, pop_dir):
         return data
 # ---------------------------------------------------------------------
 
-# function used in ajax views to return the next 50 questions relevant
-# to user
+# function used in ajax views to return the next questions relevant
+# to user, returned in sets of 'returncount'.
 def getQuestions(user_pk, ran):
     questions = []
-    returncount = 2
+    returncount = 10
     try:
         user = User.objects.get(pk=user_pk)
     except:
