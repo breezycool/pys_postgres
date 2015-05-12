@@ -256,6 +256,11 @@ def save_question(request):
     return HttpResponse(json.dumps(data))
 
 # ---------------------------------------------------------------------
+"""
+save_answers receives user_pk, and a JSON array of answer_pks, which are
+arrays, [*question_pk*, *answer_pk*, *poptime*], from Javascript. The
+answers are saved to the user, and a success message is returend.
+"""
 def save_answers(request):
     if request.method == 'POST':
         user_pk = int(request.POST.get('user_pk')) 

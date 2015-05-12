@@ -224,8 +224,13 @@ div {
 	right:1em;
 }
 #qLoader {
-	margin-top:25px;
 	display: none;
+	margin-top:10px;
+	margin-bottom:10px;
+}
+#qLoader2 {
+	display: none;
+	margin-top:10px;
 }
 #myQs {
 	text-align: center;
