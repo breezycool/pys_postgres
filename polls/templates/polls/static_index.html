@@ -13,7 +13,8 @@
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+	<!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>-->
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
 
 	<!-- jquery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
@@ -75,15 +76,10 @@
 	<div id="card">
 		<div id="cardHeader">
 			<span id="flag"><i class="fa fa-flag"></i></span>
-			<span id="qLoc"><i class="fa fa-map-marker"></i> <span>Princeton, NJ</span></span>
+			<span id="qLoc"><i class="fa fa-map-marker"></i> <span>city here</span></span>
 		</div>
 		<ul id="someQ">
-			<li id="liQuestion"><span>which club will be lit on thursday night?</span></li>
-			<li>ti</li>
-			<li>ivy</li>
-			<li>cap</li>
-			<li>cottage</li>
-			<li>colonial???</li>
+			
 		</ul>
 	</div>
 
@@ -279,47 +275,50 @@
 
 		<progress max="100" value="100"></progress>
 
-		<div id="allow">Please allow location services.
+		<div id="allow"><div>Please allow location services.
 			<br>
 			<br>(It may take a few seconds to register your permission.)</div>
+			Or, enter your city manually:<br><input type="text" id="enterLoc" placeholder="e.g., Princeton, NJ"  maxlength="100"><div id="go" style="display:none">Go</div>
+		</div>
 
-			<div id="minimize">
-				<div id="questionMin">HOW ARE YOU USED TO LOVING?<span><i class="fa fa-star"></i></span></div>
-				<div id="answersMin">
-					<div>
-						<div>sillysillysillysillysillysillysillysillysillysilly</div>
-					</div>
-					<div>
-						<div>sillysillysillysillysillysillysilly</div>
-					</div>
-					<div>
-						<div>sillysillysillysillysilly sillysillysillys illysillysillysillysillysilly sillysillysillysillys illysillysillysillysillysilly</div>
-					</div>
-					<div>
-						<div>discreetly</div>
-					</div>
-					<div>
-						<div>wut is luv</div>
-					</div>
+
+		<div id="minimize">
+			<div id="questionMin">HOW ARE YOU USED TO LOVING?<span><i class="fa fa-star"></i></span></div>
+			<div id="answersMin">
+				<div>
+					<div>sillysillysillysillysillysillysillysillysillysilly</div>
+				</div>
+				<div>
+					<div>sillysillysillysillysillysillysilly</div>
+				</div>
+				<div>
+					<div>sillysillysillysillysilly sillysillysillys illysillysillysillysillysilly sillysillysillysillys illysillysillysillysillysilly</div>
+				</div>
+				<div>
+					<div>discreetly</div>
+				</div>
+				<div>
+					<div>wut is luv</div>
 				</div>
 			</div>
+		</div>
 
 
-			<div id="clickToAsk" class="stuckBar">
-				submit a poll
-			</div>
-			<div id="navRight" class="changeQ">
-				<span>next</span>
-				<i class="fa fa-angle-right" style="font-size:5em"></i>
-			</div>
-			<div id="navLeft" class="changeQ">
-				<span>back</span>
-				<i class="fa fa-angle-left" style="font-size:5em"></i>
-			</div>
+		<div id="clickToAsk" class="stuckBar">
+			submit a poll
+		</div>
+		<div id="navRight" class="changeQ">
+			<span>next</span>
+			<i class="fa fa-angle-right" style="font-size:5em"></i>
+		</div>
+		<div id="navLeft" class="changeQ">
+			<span>back</span>
+			<i class="fa fa-angle-left" style="font-size:5em"></i>
+		</div>
 
-		</body>
-
-
+	</body>
 
 
-		</html>
+
+
+	</html>

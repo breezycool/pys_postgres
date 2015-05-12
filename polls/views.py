@@ -35,6 +35,7 @@ data):
     }
 }
 """
+@csrf_exempt
 def get_questions(request):
     if request.method == 'POST':
         user_pk = int(request.POST.get('user_pk'))
@@ -66,6 +67,7 @@ flag_questions receives question_pk and user_pk from Javascript, flags
 that question, and returns a success message that specifies how many 
 flags the question now has.
 """
+@csrf_exempt
 def flag_question(request):
     question_pk = int(request.POST.get('question_pk'))
     user_pk = int(request.POST.get('user_pk'))
@@ -91,6 +93,7 @@ selected from Javascript, and returns the set of data related to the
 question to which that answer relates in JSON, in the format that is 
 specified by the formatAnswers method in custom_methods.py
 """
+@csrf_exempt
 def get_data(request):
     if request.method == 'POST':
         try:
@@ -129,6 +132,7 @@ user in the following JSON format ('*'' represents variable data):
     ...
 ]
 """
+@csrf_exempt
 def get_profile(request):
     # number of questions to return in each AJAX call
     returncount = 15
@@ -191,6 +195,7 @@ location is updated, and a success message is returned. If the user
 does not yet exist, a new user is created and a success message is 
 returned.
 """
+@csrf_exempt
 def save_user(request):
     if request.method == 'POST':
         info = json.loads(request.POST.get('info'))
@@ -229,6 +234,7 @@ answers from Javascript. If a question of the exact same wording is not
 already in the database, then the question is saved to the database 
 and a success message is returned.
 """
+@csrf_exempt
 def save_question(request):
     if request.method == 'POST':
         question_text = request.POST.get('question_text')
@@ -261,6 +267,7 @@ save_answers receives user_pk, and a JSON array of answer_pks, which are
 arrays, [*question_pk*, *answer_pk*, *poptime*], from Javascript. The
 answers are saved to the user, and a success message is returend.
 """
+@csrf_exempt
 def save_answers(request):
     if request.method == 'POST':
         user_pk = int(request.POST.get('user_pk')) 
@@ -272,9 +279,10 @@ def save_answers(request):
         # bad variables, could change if i have time
         for pk in answer_pks:
             answer_pk = int(pk[1])
-            # sent as time since epop
-            poptime = int(pk[2])
-            #nicetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(poptime))
+            poptime = int(pk[2]) # sent as time since epop
+
+            dt = datetime.fromtimestamp(poptime/1000.0)
+
             try:
                 answer = Answer.objects.get(pk=answer_pk)
                 # check user has not already answered this question
@@ -283,18 +291,14 @@ def save_answers(request):
                     raise Exception('you have already answered this question')
                 except:
                     pass
-                    #return HttpResponse(json.dumps({"answer": answer.text}))
-                    # all is well, add to database
-                    if user.answer_set.filter(question=answer.question).count()==0:
-                        answer.users.add(user)
-                        #answertime = datetime.strptime(nicetime, "%Y-%m-%d %H:%M:%S")
-                        # NEED TO INCLUDE TIMESTAMP FROM AJAX, index 2, to fix
-                        AnswerInfo(answer=answer,user=user).save() # time set to now by default
-                    else:
-                        errors[answer_pk] = "question is already in our database"
+                # all is well, add to database
+                if user.answer_set.filter(question=answer.question).count()==0:
+                    answer.users.add(user)
+                    AnswerInfo(answer=answer,user=user,time=dt).save() # time set to now by default
+                else:
+                    errors[answer_pk] = "question is already in our database"
 
             except Exception as err:
-                # do I want to keep going like this? or stop?
                 errors[answer_pk] = err
         if len(errors) == 0:
             data = {'success': 'all answers were recorded in the database'}

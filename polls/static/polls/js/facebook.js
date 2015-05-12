@@ -86,6 +86,7 @@ function facebookLogin() {
 $(document).on('click','#logout', function() {
   FB.logout(function(response) {
     console.log(response);
+    locationSet = false;
     $('#overlay,#login').slideDown(500);
 })
 });

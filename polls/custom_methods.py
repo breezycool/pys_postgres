@@ -7,7 +7,10 @@ def calculate_age(born):
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
-# format answers
+"""
+format answers in the following format:
+--WRITE FORMAT HERE--
+"""
 def formatAnswers(answer_set):
     array = []
     for a in answer_set:
@@ -47,10 +50,12 @@ def formatAnswers(answer_set):
         array.append(obj)
     return array
 
-# sort array of questions, first by method specified in sub_query, 
-# then by the complimentary method ('popular' or 'recent'). rec_dir
-# specifies the direction of the recent sorting, and pop_dir specifies
-# the direction of the popular sorting ('asc' or 'desc')
+"""
+sort array of questions, first by method specified in sub_query, 
+then by the complimentary method ('popular' or 'recent'). rec_dir
+specifies the direction of the recent sorting, and pop_dir specifies
+the direction of the popular sorting ('asc' or 'desc')
+"""
 # ---------------------------------------------------------------------
 # sort array of questions by most popular
 def sortByPopular(array): #IS THIS GOING TO BE SLOW?????
@@ -73,6 +78,7 @@ def sortByRecent(array):
 
     return sorted(array, key=mostRecent)
 
+# holistic sort function
 def sortBy(array, primary, rec_dir, pop_dir):
     if primary == 'popular':
         data = sortByRecent(array)
@@ -96,7 +102,7 @@ def sortBy(array, primary, rec_dir, pop_dir):
 # to user
 def getQuestions(user_pk, ran):
     questions = []
-    returncount = 15
+    returncount = 2
     try:
         user = User.objects.get(pk=user_pk)
     except:
@@ -105,9 +111,8 @@ def getQuestions(user_pk, ran):
     lat = user.lat
     lon = user.lon
     radius = 5 
-    qs = Question.objects.order_by('-pub_date') # this will be relative to the user's location
+    qs = Question.objects.order_by('-pub_date') # newest first
 
-    # probably very inefficient, can do this better
     if ran == "near":
         for q in qs:
             # exclude all questions outside five km radius
@@ -132,7 +137,9 @@ def getQuestions(user_pk, ran):
         for answer in q.answer_set.all():
             usercount += answer.users.count()
 
-        if q.flags.count() > 5 and q.flags.count() >= usercount/7: # if more than 1/7th of users have flagged, don't show to anyone
+        # question must have at least five flags
+        # if more than 1/7th of users have flagged, don't show to anyone
+        if (q.flags.count() >= 5) and (q.flags.count() >= usercount/7):
             pass
         else:
             questions.append(q)

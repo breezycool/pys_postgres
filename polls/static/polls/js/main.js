@@ -20,6 +20,7 @@ $(function() {
     noWorld = true;
 
     loadComplete = false;
+    locationSet = false;
 
 
     $('.fa-sort-asc').hide();
@@ -94,7 +95,40 @@ $('#myQs').scroll(function() {
             ajaxReady = false;
         }
     });
+
+
+var input = document.getElementById('enterLoc');
+console.log(input)
+
+
+autocomplete = new google.maps.places.Autocomplete(input);
+
+// detect when autocomplete place changed
+// then, convert into lng and lat
+google.maps.event.addListener(autocomplete, 'place_changed', function() {
+    console.log('in addlistteennenenenenr BEFORE');
+    if (locationSet)
+        return;
+    console.log('in addlistenenenenr AFTER')
+    selectedLat = autocomplete.getPlace().geometry.location.lat();
+    selectedLng = autocomplete.getPlace().geometry.location.lng();
+    fullUserObj.lat = selectedLat;
+    fullUserObj.lng = selectedLng;
+    saveU(fullUserObj);
+    locationSet = true;
+    $('progress').hide();
+    $('#overlay').slideUp(300);
+    window.setTimeout(function() {
+        loadComplete = true;
+    }, 300)
+    $('#allow').hide();
 });
+
+
+
+});
+
+
 var currentView = 'freqData'; // tracks current data display for toggling on and off when new data is selected
 
 // Load the Visualization API and the piechart package.
@@ -143,22 +177,6 @@ $.ajaxSetup({
         }
     }
 });
-
-/* GOOGLE MAPS BEGIN
-var map;
-
-function initialize() {
-    var mapOptions = {
-        zoom: 10,
-        center: new google.maps.LatLng(40.3679, -74.6543),
-        disableDefaultUI: true
-    };
-    map = new google.maps.Map(document.getElementById('map'),
-        mapOptions);
-}
-
-google.maps.event.addDomListener(window, 'load', initialize);
-GOOGLE MAPS END */
 
 
 $(document).on('click', '#profile', function() {
@@ -526,6 +544,10 @@ function getLocation() {
 
 // use the user's geolocation
 function usePosition(position) {
+    console.log('in use position BEFORE');
+    if (locationSet)
+        return;
+    console.log('in use position AFTER');
     $('progress').hide();
     $('#overlay').slideUp(300);
     window.setTimeout(function() {
@@ -538,17 +560,9 @@ function usePosition(position) {
     // add lat and lng to user obj, to send to backend
     fullUserObj.lat = lat;
     fullUserObj.lng = lng;
+    locationSet = true;
     saveU(fullUserObj);
-    // fill in user details in navbar
-    //age = bdayToAge(fullUserObj.birthday);
-    // $('#age').html(age);
-    //if (fullUserObj.gender == 'male')
-    //  $('.fa-mars').show();
-    // else
-    //  $('.fa-venus').show();
-    //alert(fullUserObj.name.split(' ')[0]);
-    //reverseGeo(latlng);
-    //$('#myName').text(fullUserObj.name.split(' ')[0]);
+
     console.log(fullUserObj);
 }
 
@@ -558,19 +572,23 @@ function locError(error) {
     switch (error.code) {
         case error.PERMISSION_DENIED:
         $('progress').hide();
-        $('#allow').text('We want to make this site as fun and interesting as possible. You need to enable location services to continue.');
+        $('#allow > div:first-child').html('We want to make this site as fun and interesting as possible. You need to enable location services to continue.<br><br>');
+        $('#manualLoc').show();
         break;
         case error.POSITION_UNAVAILABLE:
         $('progress').hide();
-        $('#allow').text('Hmm, your location info is unavailable...');
+        $('#allow > div:first-child').text('Hmm, your location info is unavailable... Try refreshing the page.<br><br>');
+        $('#manualLoc').show();
         break;
         case error.TIMEOUT:
         $('progress').hide();
-        $('#allow').text('Oops, your request timed out. Please refresh the page and try again.');
+        $('#allow > div:first-child').text('Oops, your request timed out. Try refreshing the page.<br><br>');
+        $('#manualLoc').show();
         break;
         case error.UNKNOWN_ERROR:
         $('progress').hide();
-        $('#allow').text('Something went wrong. Please refresh the page and try again.');
+        $('#allow > div:first-child').text('Something went wrong. Try refreshing the page.<br><br>');
+        $('#manualLoc').show();
         break;
     }
 }
@@ -994,6 +1012,9 @@ function appendResponse(JSONobj, myResponse) {
 
     return JSON.stringify(myData);
 }
+
+
+
 
 // cleanup if user exits early
 $(window).on('beforeunload', function() {
