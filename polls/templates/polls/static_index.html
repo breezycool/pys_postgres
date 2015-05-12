@@ -76,7 +76,7 @@
 	<div id="card">
 		<div id="cardHeader">
 			<span id="flag"><i class="fa fa-flag"></i></span>
-			<span id="qLoc"><i class="fa fa-map-marker"></i> <span>city here</span></span>
+			<span id="qLoc"><i class="fa fa-map-marker"></i> <span></span></span>
 		</div>
 		<ul id="someQ">
 			
@@ -228,97 +228,96 @@
 		</div>
 
 		<div id="mainName">
-			<div id="PYS">Polled You So
-				<br><span style="font-size:0.5em; color:black">Anonymous polling for the masses</span></div>
-
-				<div id="wrapper">
-					<div id="facebookButton" onclick="facebookLogin()">
-						<i class="fa fa-facebook-official"></i>&nbsp; Sign in with Facebook
-					</div>
-					<div id="justification">Don't worry. We'll never post for you and everything remains anonymous.</div>
+			<div id="PYS"><span style="color: #7D26CD ; font-weight: bold; text-shadow: 1px 1px #fff;">Polled You So</span></div>
+			<div id="subtitle"><span style="text-shadow: 1px 1px #000; font-size:0.5em;"><span style="color:#F68E55 ">Anonymous </span><span style="color:#3BB878 ">polling </span><span style="color:#00BFF3 ">for </span><span style="color:#855FA8 ">the </span><span style="color:#F06EA9 ">masses</span></span></div>
+			<div id="wrapper">
+				<div id="facebookButton" onclick="facebookLogin()">
+					<i class="fa fa-facebook-official"></i>&nbsp; Sign in with Facebook
 				</div>
+				<div id="justification">Don't worry. We'll never post for you and everything remains anonymous.</div>
 			</div>
 		</div>
+	</div>
 
 
 
-		<div id="navbar" class="stuckBar">
-			<div id="logo">
-				<img src="https://s3.amazonaws.com/polledyouso/Untitled-1.png" style="max-height:40px">
+	<div id="navbar" class="stuckBar">
+		<div id="logo">
+			<img src="https://s3.amazonaws.com/polledyouso/Untitled-1.png" style="max-height:40px">
+		</div>
+
+
+		<div id="locToggle">
+			<div id="near" class="selected">near</div><div id="far">far</div>
+			<div id="asked" class="selected" style="display:none">asked</div><div id="answered" style="display:none">answered</div>
+		</div>	
+
+
+		<div id="userInfo">
+			<img id="myPic" src="">
+			<span id="myName"></span>
+			<i class="fa fa-bookmark-o" style="color:#7D26CD"></i>
+			<i class="fa fa-bookmark" style="color:#7D26CD; display:none"></i>
+
+
+			<div id="userSelections">
+				<ul>
+					<li id="profile">profile</li>
+					<li id="logout">logout</li>
+				</ul>
 			</div>
 
 
-			<div id="locToggle">
-				<div id="near" class="selected">near</div><div id="far">far</div>
-				<div id="asked" class="selected" style="display:none">asked</div><div id="answered" style="display:none">answered</div>
-			</div>	
+
+		</div>
+	</div>
+
+	<progress max="100" value="100"></progress>
+
+	<div id="allow"><div>Please allow location services.
+		<br>
+		(It may take a few seconds to register your permission.)</div>
+		<div id="manEnterLoc">Or, enter your city manually:<br><input type="text" id="enterLoc" placeholder="e.g., Princeton, NJ"  maxlength="100"><div id="go" style="display:none">Go</div></div>
+	</div>
 
 
-			<div id="userInfo">
-				<img id="myPic" src="">
-				<span id="myName"></span>
-				<i class="fa fa-bookmark-o" style="color:#7D26CD"></i>
-				<i class="fa fa-bookmark" style="color:#7D26CD; display:none"></i>
-
-
-				<div id="userSelections">
-					<ul>
-						<li id="profile">profile</li>
-						<li id="logout">logout</li>
-					</ul>
-				</div>
-
-
-
+	<div id="minimize">
+		<div id="questionMin">HOW ARE YOU USED TO LOVING?<span><i class="fa fa-star"></i></span></div>
+		<div id="answersMin">
+			<div>
+				<div>sillysillysillysillysillysillysillysillysillysilly</div>
+			</div>
+			<div>
+				<div>sillysillysillysillysillysillysilly</div>
+			</div>
+			<div>
+				<div>sillysillysillysillysilly sillysillysillys illysillysillysillysillysilly sillysillysillysillys illysillysillysillysillysilly</div>
+			</div>
+			<div>
+				<div>discreetly</div>
+			</div>
+			<div>
+				<div>wut is luv</div>
 			</div>
 		</div>
-
-		<progress max="100" value="100"></progress>
-
-		<div id="allow"><div>Please allow location services.
-			<br>
-			<br>(It may take a few seconds to register your permission.)</div>
-			Or, enter your city manually:<br><input type="text" id="enterLoc" placeholder="e.g., Princeton, NJ"  maxlength="100"><div id="go" style="display:none">Go</div>
-		</div>
+	</div>
 
 
-		<div id="minimize">
-			<div id="questionMin">HOW ARE YOU USED TO LOVING?<span><i class="fa fa-star"></i></span></div>
-			<div id="answersMin">
-				<div>
-					<div>sillysillysillysillysillysillysillysillysillysilly</div>
-				</div>
-				<div>
-					<div>sillysillysillysillysillysillysilly</div>
-				</div>
-				<div>
-					<div>sillysillysillysillysilly sillysillysillys illysillysillysillysillysilly sillysillysillysillys illysillysillysillysillysilly</div>
-				</div>
-				<div>
-					<div>discreetly</div>
-				</div>
-				<div>
-					<div>wut is luv</div>
-				</div>
-			</div>
-		</div>
+	<div id="clickToAsk" class="stuckBar">
+		submit a poll
+	</div>
+	<div id="navRight" class="changeQ">
+		<span>next</span>
+		<i class="fa fa-angle-right" style="font-size:5em"></i>
+	</div>
+	<div id="navLeft" class="changeQ">
+		<span>back</span>
+		<i class="fa fa-angle-left" style="font-size:5em"></i>
+	</div>
 
-
-		<div id="clickToAsk" class="stuckBar">
-			submit a poll
-		</div>
-		<div id="navRight" class="changeQ">
-			<span>next</span>
-			<i class="fa fa-angle-right" style="font-size:5em"></i>
-		</div>
-		<div id="navLeft" class="changeQ">
-			<span>back</span>
-			<i class="fa fa-angle-left" style="font-size:5em"></i>
-		</div>
-
-	</body>
+</body>
 
 
 
 
-	</html>
+</html>

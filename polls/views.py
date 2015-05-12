@@ -242,8 +242,8 @@ def save_question(request):
         user_pk = request.POST.get('user_pk')
 
         # checks for equivalence of text; could also do answers.
-        if Question.objects.filter(question_text=question_text).count() > 0:
-            return HttpResponse(json.dumps({'error': 'this question is already in our database'}))
+        #if Question.objects.filter(question_text=question_text).count() > 0:
+        #    return HttpResponse(json.dumps({'error': 'this question is already in our database'}))
 
         # save the question to the database (checking of fields done on front end)
         try:

@@ -6,12 +6,10 @@ $(function() {
     });
 
 
-    scroller = 0;
 
     alreadyAnswered = false; // did the user already answer the curr question?
     currQType = 'near'; // are we looking for near or far questions?
 
-    var userID;
     var answeredQuestions;
 
     // is the user currently on the profile or polls page
@@ -19,8 +17,18 @@ $(function() {
 
     noWorld = true;
 
+    scroller = 0;
     loadComplete = false;
     locationSet = false;
+    nearDone = false;
+    farDone = false;
+
+    currentQuestions = [];
+
+    window.setTimeout(function() {
+        console.log('currentQuestions is ')
+        console.log(currentQuestions);
+    },1000)
 
 
     $('.fa-sort-asc').hide();
@@ -90,6 +98,7 @@ $('#myQs').scroll(function() {
                 return;
             }*/
             scroller++;
+            console.log('IN SCROLL BEFORE FN, VALUE OF USERID IS ' + userID);
             loadQFromQuery(userID, mainQuery, subQuery, recentSort, popularSort, scroller);
             console.log('were at the bottom');
             ajaxReady = false;
@@ -106,10 +115,8 @@ autocomplete = new google.maps.places.Autocomplete(input);
 // detect when autocomplete place changed
 // then, convert into lng and lat
 google.maps.event.addListener(autocomplete, 'place_changed', function() {
-    console.log('in addlistteennenenenenr BEFORE');
     if (locationSet)
         return;
-    console.log('in addlistenenenenr AFTER')
     selectedLat = autocomplete.getPlace().geometry.location.lat();
     selectedLng = autocomplete.getPlace().geometry.location.lng();
     fullUserObj.lat = selectedLat;
@@ -187,9 +194,10 @@ $(document).on('click', '#profile', function() {
         $('#allDone').slideUp(500);
         $('#pollSort').slideDown(500);
         $(this).text('polls');
-        $('#card,#minimize,#data,#navLeft,#navRight,#near,#far').hide();
-        $('#freqData,#genderData,#ageData,#balls,#music').html('');
-        $('#myQs, #piePreview, #asked, #answered').show();
+        $('#card,#minimize,#data,#navLeft,#navRight,#near,#far,#allDone').hide();
+        $('#freqData,#genderData,#ageData,#music').html('');
+        $('#myQs, #piePreview, #asked, #answered').show();  
+        saveAnswers(userID, answeredQuestions);
         loadQFromQuery(userID, mainQuery, subQuery, recentSort, popularSort, 0);
     }
     // switch to polls view
@@ -198,7 +206,8 @@ $(document).on('click', '#profile', function() {
         currentPage = 'polls';
         $(this).text('profile');
         $('#myQs,#piePreview,#minimize,#data,#navLeft,#navRight,#asked,#answered').hide();
-        $('#card,#near,#far').show();
+        $('#near,#far').show();
+        getQuestions(userID, currQType);
     }
 });
 
@@ -239,16 +248,18 @@ $(document).on('click', '#recent', function() {
 });
 
 $(document).on('click', '#myQs > ul > li', function() {
+    console.log($(this).data('existsData'))
+    if ($(this).data('existsData') == 'false') {
+        $('#piePreview').effect("pulsate", { times:2 });
+        return;
+    }
     // sampleJSON for curr q already loaded from mouseover
     $('#questionMin').text(sampleJSON.question);
     $('#answersMin').html(''); // reset min answers
     console.log('answers to be loaded are:')
     for (var i = 0; i < sampleJSON.answers.length; i++) {
-        $('#answersMin').append('<div><div data-question-id="' + prevqID + '">' + sampleJSON.answers[i].answer + '</div></div>')
+        $('#answersMin').append('<div><div data-question-id="">' + sampleJSON.answers[i].answer + '</div></div>')
     }
-
-
-
 
     $('#myQs,#piePreview').hide();
     $('#pollSort').hide();
@@ -325,7 +336,6 @@ $(document).on('click', '#locToggle > div', function() {
     // in polls; toggle between near/far
     if (currentPage == 'polls') {
         // don't do anything unless we click a new toggle
-
         var htmlID = $(this).attr('id');
         if (htmlID == 'near') {
             currQType = 'near';
@@ -337,11 +347,12 @@ $(document).on('click', '#locToggle > div', function() {
             $('#far').addClass('selected');
         }
 
-        $('#allDone').slideUp(500);
+        if (currentView == 'music')
+            clearMusic();
+
         // save answers and get questions (latter called within former)
         saveAnswers(userID, answeredQuestions);
         $('#minimize,#data,#navLeft,#navRight').hide();
-        $('#card').slideDown(500);
 
     }
     // in profile; toggle between asked/answered
@@ -351,11 +362,15 @@ $(document).on('click', '#locToggle > div', function() {
             mainQuery = 'asked';
             $('#asked').addClass('selected');
             $('#answered').removeClass('selected');
+            $('#navLeft').trigger('click');
+            $('#piePreview').html('');
             loadQFromQuery(userID, mainQuery, subQuery, recentSort, popularSort, 0);
         } else {
             mainQuery = 'answered';
             $('#answered').addClass('selected');
             $('#asked').removeClass('selected');
+            $('#navLeft').trigger('click');
+            $('#piePreview').html('');
             loadQFromQuery(userID, mainQuery, subQuery, recentSort, popularSort, 0);
         }
     }
@@ -391,48 +406,33 @@ $(document).on('click', '#dataViews > span', function() {
             $('#balls').fadeIn(250);
 
             if (noWorld) {
-                    // initiate physics world
-                    window.PIXI = globalPIXI;
-                    globalPHYSICS(worldConfig, [
-                        initWorld,
-                        addInteraction,
-                        startWorld
-                        ]);
-                    noWorld = false;
-                }
-                addBodies(globalWorld, globalPhysics, sampleJSON);
-                currentView = 'balls';
-                break;
-                case 'musicView':
-                $('#' + currentView).fadeOut(250);
-                $('#music').fadeIn(250);
-                buildMusicalCircles(sampleJSON);
-                currentView = 'music';
-                break;
-                default:
-                break;
+                // initiate physics world
+                window.PIXI = globalPIXI;
+                globalPHYSICS(worldConfig, [
+                    initWorld,
+                    addInteraction,
+                    startWorld
+                    ]);
+                noWorld = false;
             }
+            addBodies(globalWorld, globalPhysics, sampleJSON);
+            currentView = 'balls';
+            break;
+            case 'musicView':
+            $('#' + currentView).fadeOut(250);
+            $('#music').fadeIn(250);
+            buildMusicalCircles(sampleJSON);
+            currentView = 'music';
+            break;
+            default:
+            break;
+        }
 
-            if (htmlID != 'ballPit' && !noWorld)
-                clearWorld();
+        if (htmlID != 'ballPit' && !noWorld)
+            clearWorld();
 
-            if (htmlID != 'musicView') {
-                createjs.Sound.stop();
-            // clear all timeouts
-            if (activeTimeouts != null) {
-                var length = activeTimeouts.length;
-                for (var i = 0; i < length; i++)
-                    clearInterval(activeTimeouts[i]);
-                activeTimeouts = [];
-            }
-
-            // clear all intervals
-            if (activeIntervals != null) {
-                var length = activeIntervals.length;
-                for (var i = 0; i < length; i++)
-                    clearInterval(activeIntervals[i]);
-                activeIntervals = [];
-            }
+        if (htmlID != 'musicView') {
+            clearMusic();
         }
     }
 
@@ -483,6 +483,9 @@ $(document).on('click', '#navRight', function() {
     $('#data').slideUp(500);
 
     $('#card').slideDown(500);
+
+    if (currentView == 'music')
+        clearMusic();
 });
 
 // click on left arrow button
@@ -494,14 +497,21 @@ $(document).on('click', '#navLeft', function() {
         $('#allDone').slideUp(500);
         $('#minimize').show();
         $('#data').slideDown(500);
+        if (currentView == 'music') {
+            var rebuild = setTimeout(function() {
+                buildMusicalCircles(sampleJSON);
+            }, 750);
+            activeTimeouts.push(rebuild);
+        }
     } else {
-        $('#freqData,#genderData,#ageData,#balls,#music').html('');
+        $('#freqData,#genderData,#ageData,#music').html('');
         $('#myQs').slideDown(500);
         $('#piePreview').slideDown(500);
         $('#minimize').hide();
         $('#navLeft').hide();
         $('#data').slideUp(500);
         $('#pollSort').slideDown(500);
+        clearMusic();
     }
 });
 
@@ -603,8 +613,9 @@ function reverseGeo(latlng) {
         'latLng': latlng
     }, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
+            console.log('resuults in reversegeo is ')
             if (results[2]) {
-                userLoc = results[2].formatted_address;
+                userLoc = results[2].address_components[1].long_name + ', ' + results[2].address_components[3].short_name;
             } else {
                 console.log('No results found for user\'s city...');
             }
@@ -612,8 +623,8 @@ function reverseGeo(latlng) {
             console.log('Geocoder failed because of: ' + status);
         }
 
-        $('.fa-map-marker').show();
-        $('#location > span').text(userLoc);
+        // update html on poll card. must do here because we are waiting for fn to finish
+        $('#qLoc > span').text(userLoc);
     });
 }
 
@@ -644,6 +655,8 @@ function loadQuestion(currentQuestions) {
     if (currentQuestions.length <= 0)
         return 'empty';
     currQobj = currentQuestions[0];
+    var latlng = new google.maps.LatLng(currQobj['lat'], currQobj['lng']);
+    reverseGeo(latlng);
     currQuestion = currQobj['question'];
     currAnswers = currQobj['answers'];
 
@@ -664,7 +677,8 @@ function loadQuestion(currentQuestions) {
 // Call the backend to retrieve 30 questions from database.
 // Store these locally in JSON
 function getQuestions(userID, questionType) {
-
+    console.log('were currently...')
+    console.log('IN GET QUESTIONS')
     // prepare UI to get new question
     $('#loader').show();
     $('#someQ').html('');
@@ -685,18 +699,29 @@ function getQuestions(userID, questionType) {
             console.log('CURRENT QUESTION IS ');
             console.log(currentQuestions);
             currentQuestions = formatJSON(currentQuestions);
-            currentQuestions = loadQuestion(currentQuestions);
             if (currentQuestions.length <= 0) {
 
-                if (currQType == 'near')
+                if (currQType == 'near') {
                     var otherQType = 'far';
-                else
+                    nearDone = true;
+                }
+                else {
                     var otherQType = 'near';
+                    farDone = true;
+                }
 
                 $('#card').hide();
                 $('#allDone').html('<div><span style="color:#7D26CD">Congratulations!</span> You\'ve clicked through all of the ' + currQType + ' polls.</div>Change your location query to ' + otherQType + ' (above), ask your own question (below), or explore some other parts of the site!');
-                $('#allDone').show();
+                if (currentPage == 'polls')
+                    $('#allDone').show();
             }
+            else {
+                $('#allDone').hide();
+                if (currentPage == 'polls')
+                    $('#card').show();
+                currentQuestions = loadQuestion(currentQuestions);
+            }
+
         },
         error: function(e) {
             console.log(e);
@@ -757,6 +782,8 @@ function getData(answerID, myResponse) {
 // Send <= 30 answers from the user to the database
 // call getQuestions() to get another set of questions
 function saveAnswers(userID, answeredQuestions) {
+    console.log('in save answers YOOOO')
+
     $.ajax({
         url: 'savea/',
         type: 'POST',
@@ -814,6 +841,7 @@ function saveU(userObj) {
             userID = data['user_pk'];
             getQuestions(userID, currQType);
             answeredQuestions = [];
+            console.log('USER ID IS ' + userID);
         },
         error: function(e) {
             console.log(e);
@@ -821,7 +849,7 @@ function saveU(userObj) {
     });
 }
 
-// get user ID
+/*
 function getU(userObj) {
     $.ajax({
         url: 'getu/',
@@ -844,12 +872,13 @@ function getU(userObj) {
         }
     });
 }
-
+*/
 
 // get all questions associated with my user, based on certain queries
-function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection, scrollIndex) {
+function loadQFromQuery(myID, mainQuery, subQuery, recDirection, popDirection, scrollIndex) {
     // allow for infinite ajax scroll if we have 
     if (scrollIndex == 0) {
+        myQsJSON = [];
         ajaxReady = true;
         QloadComplete = false;
         scroller = 0;
@@ -865,7 +894,7 @@ function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection,
         type: 'POST',
         data: {
             csrfmiddlewaretoken: csrftoken,
-            user_pk: userID,
+            user_pk: myID,
             main_query: mainQuery, // asked or answereed
             sub_query: subQuery, // primary sorting order
             rec_dir: recDirection, // asc or desc
@@ -887,8 +916,8 @@ function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection,
             }
             console.log('success?');
             console.log(JSON.parse(data));
-            myQsJSON = JSON.parse(data);
-            if (myQsJSON.length < 15)
+            myQsJSON = myQsJSON.concat(JSON.parse(data));
+            if (myQsJSON.length < (scrollIndex + 1)*15)
                 QloadComplete = true;
 
             else
@@ -913,6 +942,7 @@ function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection,
                 $('#piePreview').html('');
                 var currQID = $(this).data('qid');
                 console.log(myQsJSON);
+
                 // find correct question/poll for which to display data
                 for (var i = 0; i < myQsJSON.length; i++) {
                     if (myQsJSON[i].qID == currQID) {
@@ -926,7 +956,13 @@ function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection,
                         }
                         if (totalFreq == 0) {
                             $('#piePreview').html('no data for this poll yet!');
+                            console.log('about to unbind the following')
+                            console.log($(this))
+                            $(this).data('existsData','false');
                             break;
+                        }
+                        else {
+                            $(this).data('existsData','true');
                         }
 
                         buildPieChart(sampleJSON, 'piePreview');

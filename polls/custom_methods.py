@@ -1,3 +1,9 @@
+"""
+contains methods that are used in views.py for asynchronous AJAX views.
+These methods are defined in this file so as not to put methods that
+represent a view and those that do not all in views.py.
+"""
+
 from polls.models import *
 from datetime import *
 from geopy.distance import vincenty
