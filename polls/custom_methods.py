@@ -96,7 +96,7 @@ def sortBy(array, primary, rec_dir, pop_dir):
 # to user
 def getQuestions(user_pk, ran):
     questions = []
-    returncount = 2
+    returncount = 15
     try:
         user = User.objects.get(pk=user_pk)
     except:

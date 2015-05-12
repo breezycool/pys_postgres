@@ -131,7 +131,7 @@ user in the following JSON format ('*'' represents variable data):
 """
 def get_profile(request):
     # number of questions to return in each AJAX call
-    returncount = 30
+    returncount = 15
 
     if request.method == 'POST':
         try:

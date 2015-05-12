@@ -232,10 +232,9 @@ $(document).on('click', '#myQs > ul > li', function() {
 
 
 
-    $('#myQs').hide();
-    $('#piePreview').hide();
-    $('#minimize').show();
-    $('#navLeft').show();
+    $('#myQs,#piePreview').hide();
+    $('#pollSort').hide();
+    $('#minimize,#navLeft').show();
     $('#data').show(500);
     $('#dataViews > span').each(function() {
         if ($(this).hasClass('selected')) {
@@ -484,6 +483,7 @@ $(document).on('click', '#navLeft', function() {
         $('#minimize').hide();
         $('#navLeft').hide();
         $('#data').slideUp(500);
+        $('#pollSort').slideDown(500);
     }
 });
 
@@ -835,6 +835,7 @@ function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection,
         ajaxReady = true;
         QloadComplete = false;
         scroller = 0;
+        $('#myQs > ul').html('');
         $('#qLoader').show();
     }
     else {
@@ -857,7 +858,6 @@ function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection,
         success: function(data) {
             if (scrollIndex == 0) {
                 $('#qLoader').hide();
-                $('#myQs > ul').html('');
                 $('#myQs').animate({
                     scrollTop: 0
                 }, 500);
@@ -870,7 +870,7 @@ function loadQFromQuery(userID, mainQuery, subQuery, recDirection, popDirection,
             console.log('success?');
             console.log(JSON.parse(data));
             myQsJSON = JSON.parse(data);
-            if (myQsJSON.length < 30)
+            if (myQsJSON.length < 15)
                 QloadComplete = true;
 
             else
