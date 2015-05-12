@@ -14,8 +14,26 @@ def calculate_age(born):
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 """
-format answers in the following format:
---WRITE FORMAT HERE--
+The following data is an examle of the format in which this method 
+formats an answer_set (data is arbitrary in this example).
+{"answers":
+    [
+        {
+            "answer": "casey",
+            "frequency": 34,
+            "maleFrequency": 10,
+            "femaleFrequency": 24,
+            "ageFreqs": [10, 2, 3, 1, 5, 0, 9, 4]
+        },
+        {
+            "answer": "lachie",
+            "frequency": 65,
+            "maleFrequency": 16,
+            "femaleFrequency": 49,
+            "ageFreqs": [8, 10, 8, 3, 7, 12, 5, 11]
+        },
+        ...
+    ]
 """
 def formatAnswers(answer_set):
     array = []
@@ -63,45 +81,37 @@ specifies the direction of the recent sorting, and pop_dir specifies
 the direction of the popular sorting ('asc' or 'desc')
 """
 # ---------------------------------------------------------------------
+def sortByQuery(questions, sub_query, pop_dir, rec_dir):
+    if sub_query == 'recent':
+        questions = sortByPopular(questions, pop_dir)
+        questions = sortByRecent(questions, rec_dir)
+    elif sub_query == 'popular':
+        questions = sortByRecent(questions, rec_dir)
+        questions = sortByPopular(questions, pop_dir)
+    return questions
+
 # sort array of questions by most popular
-def sortByPopular(array): #IS THIS GOING TO BE SLOW?????
+def sortByPopular(questions, pop_dir):
     # popular is most answered
-    def mostPopular(x):
+    def mostPopular(question):
         # count answers associated with each answer
-        question = Question.objects.get(pk=int(x['qID']))
         xcount = 0
         for answer in question.answer_set.all():
             xcount += answer.users.count()
         return xcount
 
-    return sorted(array, key=mostPopular)
+    questions = sorted(questions, key=mostPopular)
+    if pop_dir == 'desc':
+        questions = list(reversed(questions))
+    return questions
 
 # sort array of questions by most recent
-def sortByRecent(array):
-    # recent is most recent time
-    def mostRecent(x):
-        return Question.objects.get(pk=int(x['qID'])).pub_date
+def sortByRecent(questions, rec_dir):
+    questions = sorted(questions, key=lambda question: question.pub_date)
+    if rec_dir == 'desc':
+        questions = list(reversed(questions))
+    return questions
 
-    return sorted(array, key=mostRecent)
-
-# holistic sort function
-def sortBy(array, primary, rec_dir, pop_dir):
-    if primary == 'popular':
-        data = sortByRecent(array)
-        if rec_dir == 'desc':
-            data = list(reversed(data))
-        data = sortByPopular(data)
-        if pop_dir == 'desc':
-            data = list(reversed(data))
-        return data
-    else:
-        data = sortByPopular(array)
-        if pop_dir == 'desc':
-            data = list(reversed(data))
-        data = sortByRecent(data)
-        if rec_dir == 'desc':
-            data = list(reversed(data))
-        return data
 # ---------------------------------------------------------------------
 
 # function used in ajax views to return the next questions relevant
@@ -117,8 +127,8 @@ def getQuestions(user_pk, ran):
     lat = user.lat
     lon = user.lon
     radius = 5 
-    qs = Question.objects.order_by('-pub_date') # newest first
 
+    qs = Question.objects.all()
     if ran == "near":
         for q in qs:
             # exclude all questions outside five km radius
@@ -136,21 +146,16 @@ def getQuestions(user_pk, ran):
     for q in user.question_flagged.all():
         qs = qs.exclude(pk=q.pk)
 
-    count = 0
     for q in qs:
-        # add questions that user has not already answered
+        # question must have at least five flags
+        # if more than 1/7th of users have flagged, don't show to anyone
         usercount = 0
         for answer in q.answer_set.all():
             usercount += answer.users.count()
-
-        # question must have at least five flags
-        # if more than 1/7th of users have flagged, don't show to anyone
         if (q.flags.count() >= 5) and (q.flags.count() >= usercount/7):
-            pass
-        else:
-            questions.append(q)
-            count+=1
-        # specifies number of unanswered questions to return
-        if count >= returncount:
-            break
-    return questions
+            qs.exclude(pk=q.pk)
+
+    qs = sortByRecent(qs, 'desc') #custom method
+    qs = qs[0:returncount]
+
+    return qs

@@ -146,7 +146,6 @@ def get_profile(request):
                 rec_dir = request.POST.get('rec_dir') # 'asc' or 'desc'
                 pop_dir = request.POST.get('pop_dir') # 'asc' or 'desc'
                 scroll_index = int(request.POST.get('scroll_index')) # 0-number
-
                 user = User.objects.get(pk=user_pk)
             except:
                 return HttpResponse(json.dumps({'error':'user not defined'}))
@@ -158,13 +157,19 @@ def get_profile(request):
                 questions = user.question_created.all()
             else: # so as not to crash the system
                 questions = []
-            
+
+            #sort by given query and directions; see sortByQuery in 
+            #custom_methods.py       
+            questions = sortByQuery(questions, sub_query, pop_dir, rec_dir)
+
             # store relevant questions in data, taking account of which
             # questions to return based on scroll_index, return returncount
             # number of questions
-            outer_array = []
             start = returncount * scroll_index
             end = start + returncount
+            #if end >= len(questions):
+            #    end = len(questions) - 1
+            outer_array = []
             for q in questions[start:end]:
                 outer_dict = {}
                 outer_dict['qID'] = q.pk
@@ -172,12 +177,6 @@ def get_profile(request):
                 outer_dict['answers'] = formatAnswers(q.answer_set.all())
                 outer_array.append(outer_dict)
             data = outer_array
-
-            # sort questions, first by method specified in sub_query, then
-            # by the complimentary method, taking into account the direction
-            # of 'most recent' sorting (rec_dir) and the direction of 'most
-            # popular' sorting (pop_dir)
-            data = sortBy(data, sub_query, rec_dir, pop_dir)
 
         except:
             data = {'error': 'could not retrieve your data'}

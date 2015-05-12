@@ -1,6 +1,5 @@
 $(function() {
 
-    $('#dataViews').hide(); // dont do display none, because we need table format
     // prevent default actions on submission of any form
     $('form').submit(function(e) {
         e.preventDefault();
@@ -195,7 +194,7 @@ $(document).on('click', '#profile', function() {
         $('#allDone').slideUp(500);
         $('#pollSort').slideDown(500);
         $(this).text('polls');
-        $('#card,#minimize,#dataViews,#data,#navLeft,#navRight,#near,#far,#allDone').hide();
+        $('#card,#minimize,#data,#navLeft,#navRight,#near,#far,#allDone').hide();
         $('#freqData,#genderData,#ageData,#music').html('');
         $('#myQs, #piePreview, #asked, #answered').show();  
         saveAnswers(userID, answeredQuestions);
@@ -206,7 +205,7 @@ $(document).on('click', '#profile', function() {
         $('#pollSort').slideUp(500);
         currentPage = 'polls';
         $(this).text('profile');
-        $('#myQs,#piePreview,#minimize,#dataViews,#data,#navLeft,#navRight,#asked,#answered').hide();
+        $('#myQs,#piePreview,#minimize,#data,#navLeft,#navRight,#asked,#answered').hide();
         $('#near,#far').show();
         getQuestions(userID, currQType);
     }
@@ -264,7 +263,7 @@ $(document).on('click', '#myQs > ul > li', function() {
 
     $('#myQs,#piePreview').hide();
     $('#pollSort').hide();
-    $('#minimize,#navLeft,#dataViews').show();
+    $('#minimize,#navLeft').show();
     $('#data').show(500);
     $('#dataViews > span').each(function() {
         if ($(this).hasClass('selected')) {
@@ -323,7 +322,7 @@ $(document).on('click', '.liAnswer', function() {
             $(this).css('box-shadow', '0 4px 2px -2px #333');
         }
     });
-    $('#minimize,#dataViews').show();
+    $('#minimize').show();
     $('#data').slideDown(500);
     $('#navRight').show();
 });
@@ -353,7 +352,7 @@ $(document).on('click', '#locToggle > div', function() {
 
         // save answers and get questions (latter called within former)
         saveAnswers(userID, answeredQuestions);
-        $('#minimize,#dataViews,#data,#navLeft,#navRight').hide();
+        $('#minimize,#data,#navLeft,#navRight').hide();
 
     }
     // in profile; toggle between asked/answered
@@ -480,7 +479,7 @@ $(document).on('click', '#navRight', function() {
             saveAnswers(userID, answeredQuestions);
         }
     }
-    $('#minimize,#dataViews').hide();
+    $('#minimize').hide();
     $('#data').slideUp(500);
 
     $('#card').slideDown(500);
@@ -496,7 +495,7 @@ $(document).on('click', '#navLeft', function() {
         $('#navRight').show();
         $('#card').slideUp(500);
         $('#allDone').slideUp(500);
-        $('#minimize,#dataViews').show();
+        $('#minimize').show();
         $('#data').slideDown(500);
         if (currentView == 'music') {
             var rebuild = setTimeout(function() {
@@ -508,7 +507,7 @@ $(document).on('click', '#navLeft', function() {
         $('#freqData,#genderData,#ageData,#music').html('');
         $('#myQs').slideDown(500);
         $('#piePreview').slideDown(500);
-        $('#minimize,#dataViews').hide();
+        $('#minimize').hide();
         $('#navLeft').hide();
         $('#data').slideUp(500);
         $('#pollSort').slideDown(500);
