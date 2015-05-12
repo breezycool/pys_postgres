@@ -52,9 +52,16 @@ div {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+    overflow: scroll;
 }
 #subtitle {
     line-height: 50px;
+}
+#description {
+    font-size:20px;
+}
+#description > ul > li {
+    margin-top:10px;
 }
 #wrapper {
     position: absolute;
@@ -286,12 +293,12 @@ div {
     box-shadow: 0 1px 5px lightgrey;
     cursor: default;
     /*
-	-webkit-transition: all 0.25s ease-in-out;
-	-moz-transition: all 0.25s ease-in-out;
-	-ms-transition: all 0.25s ease-in-out;
-	-o-transition: all 0.25s ease-in-out;
-	transition: all 0.25s ease-in-out;
-	*/
+    -webkit-transition: all 0.25s ease-in-out;
+    -moz-transition: all 0.25s ease-in-out;
+    -ms-transition: all 0.25s ease-in-out;
+    -o-transition: all 0.25s ease-in-out;
+    transition: all 0.25s ease-in-out;
+    */
     
     cursor: pointer;
 }

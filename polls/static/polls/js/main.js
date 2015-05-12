@@ -463,7 +463,7 @@ $(document).on('click', '#flagModal > div', function() {
         }, 250)
 
     }, 300);
-    flagQuestion(prevqID, userID);
+    flagQuestion(userID, prevqID);
 });
 
 // converts birthday to age representation in years

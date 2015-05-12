@@ -11,7 +11,7 @@
 // on document load
 $(function() {
     // autocomplete location on typing into #enterLoc div
-    var autocomplete = new google.maps.places.Autocomplete($('#enterLoc')[0]);
+    autocomplete = new google.maps.places.Autocomplete($('#enterLoc')[0]);
 
     // detect when autocomplete place changed
     google.maps.event.addListener(autocomplete, 'place_changed', setManLoc);

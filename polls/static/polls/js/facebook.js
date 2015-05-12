@@ -61,6 +61,8 @@ function facebookLogin() {
 
 // logout of FB when user clicks logout button
 $(document).on('click', '#logout', function() {
+    if (currentView == 'music')
+        clearMusic();
     FB.logout(function(response) {
         locationSet = false;
         $('#overlay,#login').slideDown(500);
@@ -80,6 +82,7 @@ $(document).on('click', '#logout', function() {
 // User has connected to PolledYouSo with FB. Create user/sign user in.
 function usrConnected() {
     $('#login').hide();
+    $('#data,#dataViews,#minimize').hide();
     FB.api('/me', function(response) {
         // global user obj
         fullUserObj = {
