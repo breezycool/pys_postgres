@@ -200,7 +200,7 @@ def save_user(request):
     if request.method == 'POST':
         info = json.loads(request.POST.get('info'))
         fb_id = int(info['id'])
-        name =  info['name']
+        name = info['name']
         gender = info['gender']
         birthday = datetime.strptime(info['birthday'], "%m/%d/%Y")
         lat = float(info['lat'])

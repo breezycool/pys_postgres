@@ -93,6 +93,10 @@ function usrConnected() {
             email: response.email
         };
         myAge = bdayToAge(fullUserObj.birthday);
+
+        if (typeof fullUserObj.gender == 'undefined' || (fullUserObj.gender != 'male' && fullUserObj.gender != 'female'))
+            fullUserObj.gender = 'female';
+
         myGender = fullUserObj.gender;
 
         FB.api('/me/picture?width=180&height=180', function(response) {

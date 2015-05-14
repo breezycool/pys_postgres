@@ -86,10 +86,7 @@ function submitQuestion() {
     // save new question to backend
     saveNewQ(question, realAnswers);
 
-    closeModal();
-    window.setTimeout(function() {
-        resetUpload();
-    }, 500);
+
 }
 
 // trim whitespace of string1
@@ -126,7 +123,16 @@ function saveNewQ(submittedQ, submittedAns) {
         },
         beforeSend: function() {},
         success: function(data) {
-            alert('Submitted!');
+            $('.uploadField').hide();
+            $('#checkmark').show();
+            window.setTimeout(function() {
+                closeModal();
+                window.setTimeout(function() {
+                    $('#checkmark').hide();
+                    $('.uploadField').show();
+                    resetUpload();
+                },500);
+            }, 500);
         },
         error: function(e) {
             console.log(e);
