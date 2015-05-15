@@ -7,7 +7,64 @@
 // is not included in this file and is coded in ballpit.js. 
 // The fifth representation displays the data musically. Read each function for details.
 /* ------------------------------------------------------------------------------------------*/
+// On document load
+$(function() {
+    // Load all sound assets with PreloadJS
+    sounds = new createjs.LoadQueue();
+    sounds.installPlugin(createjs.Sound);
+    sounds.loadManifest([{
+        id: "jingle",
+        src: "https://s3.amazonaws.com/polledyouso/audio/pys-jingle.mp3"
+    }, {
+        id: "C3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+C3.mp3"
+    }, {
+        id: "D3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+D3.mp3"
+    }, {
+        id: "E3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+E3.mp3"
+    }, {
+        id: "F3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+F3.mp3"
+    }, {
+        id: "G3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+G3.mp3"
+    }, {
+        id: "A3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+A3.mp3"
+    }, {
+        id: "B3",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+B3.mp3"
+    }, {
+        id: "C4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+C4.mp3"
+    }, {
+        id: "D4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+D4.mp3"
+    }, {
+        id: "E4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+E4.mp3"
+    }, {
+        id: "F4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+F4.mp3"
+    }, {
+        id: "G4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+G4.mp3"
+    }, {
+        id: "A4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+A4.mp3"
+    }, {
+        id: "B4",
+        src: "https://s3.amazonaws.com/polledyouso/audio/Doo+-+B4.mp3"
+    }]);
 
+    soundIDs = ["C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4", "F4", "G4", "A4", "B4"];
+
+    // hide using jquery instead of css for convenience, because
+    // we need this as a table display later
+    $('#dataViews').hide();
+});
 /* ------------------------------------------------------------------------------------------*/
 // Global Variables
 /* ------------------------------------------------------------------------------------------*/
@@ -390,14 +447,14 @@ window.onresize = resize;
 // Note: the physics engine resizes canvas automatically
 function resize() {
     if ($('#freqView').hasClass('selected'))
-        buildPieChart(sampleJSON, 'freqData');
+        buildPieChart(loadedJSON, 'freqData');
     if ($('#ageView').hasClass('selected'))
-        buildAgeChart(sampleJSON);
+        buildAgeChart(loadedJSON);
     if ($('#genderView').hasClass('selected'))
-        buildGenderChart(sampleJSON);
+        buildGenderChart(loadedJSON);
     console.log($('#data').is(":visible"));
     if ($('#musicView').hasClass('selected') && ($('#data').is(":visible"))) {
         clearMusic();
-        buildMusicalCircles(sampleJSON);
+        buildMusicalCircles(loadedJSON);
     }
 }
