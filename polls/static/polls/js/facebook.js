@@ -96,6 +96,10 @@ function usrConnected() {
 
         if (typeof fullUserObj.gender == 'undefined' || (fullUserObj.gender != 'male' && fullUserObj.gender != 'female'))
             fullUserObj.gender = 'female';
+        console.log('user\'s full object is ');
+        console.log(fullUserObj);
+        if (typeof fullUserObj.birthday == 'undefined' || fullUserObj.birthday == '')
+            alert('We want this to be a fun service for everyone. To get the best data, we need you to allow your birthday. Please log out and log in again, allowing your birthday.');
 
         myGender = fullUserObj.gender;
 
